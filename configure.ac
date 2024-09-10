@@ -18,6 +18,7 @@ m4_define([lt_age],      4)
 
 dnl initilization
 AC_INIT([libbluray],[bluray_version],[http://www.videolan.org/developers/libbluray.html])
+${CFLAGS=""}
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_HOST
@@ -95,6 +96,12 @@ AC_ARG_ENABLE([extra-warnings],
 
 AC_ARG_ENABLE([optimizations],
   [AS_HELP_STRING([--disable-optimizations], [disable optimizations @<:@default=enabled@:>@])])
+
+AC_ARG_ENABLE([debug],
+  [AS_HELP_STRING([--enable-debug], 
+  [enable debugging (default is no)])],
+  [use_debug=$enableval],
+  [use_debug=no])
 
 AC_ARG_ENABLE([examples],
   [AS_HELP_STRING([--enable-examples],
@@ -218,7 +225,7 @@ AS_IF([test "x$with_freetype" != "xno"], [
   ])
 ])
 
-CC_CHECK_CFLAGS_APPEND([-Wall -Wdisabled-optimization -Wpointer-arith ]dnl
+CC_CHECK_CFLAGS_APPEND([-Wall -Wpointer-arith ]dnl
 [-Wredundant-decls -Wcast-qual -Wwrite-strings -Wtype-limits -Wundef ]dnl
 [-Wmissing-prototypes -Wshadow])
 
@@ -237,6 +244,16 @@ AS_IF([test "x$enable_extra_warnings" != "xno"], [
 
 AS_IF([test "x$enable_optimizations" != "xno"], [
   CC_CHECK_CFLAGS_APPEND([-O3 -fomit-frame-pointer])
+])
+AS_IF([test "x$enable_optimizations" == "xno"], [
+  CC_CHECK_CFLAGS_APPEND([-O0])
+])
+
+AS_IF([test "x$enable_debug" != "xno"], [
+  CC_CHECK_CFLAGS_APPEND([-g3])
+])
+AS_IF([test "x$enable_debug" == "xno"], [
+  CC_CHECK_CFLAGS_APPEND([-g])
 ])
 
 dnl use examples
@@ -293,10 +310,12 @@ AS_IF([test "x$use_bdjava_jar" = "xyes"], [
         javac_version=`"$JAVAC" -version 2>&1 | head -n 1`
         [with_java9=`echo "$javac_version" | grep -E -q '^javac\ (9|1[0-1])' && echo yes`]
         [with_java12=`echo "$javac_version" | grep -E -q '^javac\ (1[2-9])' && echo yes`]
+        [with_java19=`echo "$javac_version" | grep -E -q '^javac\ (2[0-9])' && echo yes`]
     ])
 
     AS_IF([test "x$with_java9" = "xyes" -a "$BDJ_TYPE" != "j2me"], [java_code_version=1.6], [java_code_version=1.4])
     AS_IF([test "x$with_java12" = "xyes" -a "$BDJ_TYPE" != "j2me"], [java_code_version=1.7])
+    AS_IF([test "x$with_java19" = "xyes" -a "$BDJ_TYPE" != "j2me"], [java_code_version=1.9])
 ])
 
 AC_DEFINE_UNQUOTED([JAVA_ARCH], ["$java_arch"], ["Defines the architecture of the java vm."])
@@ -304,6 +323,7 @@ AC_DEFINE_UNQUOTED([JDK_HOME], ["$JDK_HOME"], [""])
 AM_CONDITIONAL([USING_BDJAVA_BUILD_JAR], [ test $use_bdjava_jar = "yes" ])
 AM_CONDITIONAL([USING_JAVAC_9], [ test x"$with_java9" = x"yes" ])
 AM_CONDITIONAL([USING_JAVAC_12], [ test x"$with_java12" = x"yes" ])
+AM_CONDITIONAL([USING_JAVAC_19], [ test x"$with_java19" = x"yes" ])
 
 dnl BD-J type
 if test "$BDJ_TYPE" = "j2me"; then
@@ -384,4 +404,4 @@ fi
 echo "  Metadata support (libxml2):    $with_libxml2"
 echo "  External libudfread:           $with_libudfread"
 echo "  Build examples:                $use_examples"
-
+echo "  Enable debug:                  $use_debug"
