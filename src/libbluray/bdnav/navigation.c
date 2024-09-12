@@ -83,7 +83,7 @@ _pl_streams_score(const MPLS_PL *pl)
     for (int ii = 0; ii < pl->list_count; ii++) {
         pi = &pl->play_item[ii];
         if(pi->stn.num_audio > i_num_audio)
-            i_num_audio= pi->stn.num_audio;
+            i_num_audio = pi->stn.num_audio;
 
         if(pi->stn.num_pg > i_num_pg)
             i_num_pg = pi->stn.num_pg;
@@ -223,7 +223,11 @@ _find_repeats(const MPLS_PL *pl, const char *m2ts, uint32_t in_time, uint32_t ou
         const MPLS_PI *pi;
 
         pi = &pl->play_item[ii];
-        // Ignore titles with repeated segments
+        // Ignore titles with repeated segments 
+        //  ERIK: carefill here: a clip with same time may contain different audio streams
+        //  eg one clip had 5 streams defined, next clip has one stream defined. 
+        //  both clips have the stream audio stream id, but encode different audio streams 
+        //  e.g one dts, the other one ac3
         if (strcmp(pi->clip[0].clip_id, m2ts) == 0 &&
             pi->in_time  == in_time &&
             pi->out_time == out_time) {
