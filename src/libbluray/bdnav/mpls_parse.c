@@ -238,6 +238,11 @@ _parse_stn(BITSTREAM *bits, MPLS_STN *stn)
     stn->num_pip_pg          = bs_read(bits, 8);
     stn->num_dv              = bs_read(bits, 8);
 
+    if (stn->num_audio > 4)
+    {
+        BD_DEBUG(DBG_NAV | DBG_CRIT, "Found audio %d\n", stn->num_audio);
+    }
+
     // 4 reserve bytes
     bs_skip(bits, 4 * 8);
 
@@ -521,6 +526,8 @@ _parse_playitem(BITSTREAM *bits, MPLS_PI *pi)
         }
         pi->clip[ii].stc_id   = bs_read(bits, 8);
     }
+
+    /*  parse the stream that comes with this clip entry */
     if (!_parse_stn(bits, &pi->stn)) {
         return 0;
     }
@@ -772,7 +779,7 @@ _parse_playlist(BITSTREAM *bits, MPLS_PL *pl)
     }
 
     if (pl->sub_count) {
-    sub_path = calloc(pl->sub_count,  sizeof(MPLS_SUB));
+        sub_path = calloc(pl->sub_count,  sizeof(MPLS_SUB));
         if (!sub_path) {
             return 0;
         }
