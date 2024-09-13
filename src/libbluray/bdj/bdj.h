@@ -34,7 +34,7 @@ typedef enum {
 
     BDJ_EVENT_START            = 1, /* param: title number */
     BDJ_EVENT_STOP             = 2,
-    BDJ_EVENT_PSR102           = 3,
+//    BDJ_EVENT_PSR102           = 3,
 
     /* Playback status */
 

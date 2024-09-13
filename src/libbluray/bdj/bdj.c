@@ -1146,7 +1146,7 @@ int bdj_process_event(BDJAVA *bdjava, unsigned ev, unsigned param)
 
         /*  1 */ "START",
         /*  2 */ "STOP",
-        /*  3 */ "PSR102",
+   //     /*  3 */ "PSR102",
 
         /*  4 */ "PLAYLIST",
         /*  5 */ "PLAYITEM",

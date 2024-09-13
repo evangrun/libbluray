@@ -65,6 +65,11 @@ public class BDFramePeer extends BDComponentPeer implements FramePeer
     public void emulateActivation(boolean doActivate) {
     }
 
+    /* Java 9, extend windowspeer */
+    public GraphicsConfiguration getAppropriateGraphicsConfiguration(GraphicsConfiguration gc) {
+        return gc;
+    }
+
     //
     // ContainerPeer
     //
@@ -176,13 +181,7 @@ public class BDFramePeer extends BDComponentPeer implements FramePeer
     /* Java >= 9 */
     public boolean requestFocus(Component c/*lightweightChild*/, boolean a/*temporary*/,
                                 boolean b/*focusedWindowChangeAllowed*/, long l/*time*/,
-                                java.awt.event.FocusEvent.Cause cause
-                                ) {
-        return requestFocusHelper(c, a, b, l);
-    }
-
-    /* Java < 9 */
-    public boolean requestFocus(Component c, boolean a, boolean b, long l, sun.awt.CausedFocusEvent.Cause d) {
+                                sun.awt.CausedFocusEvent.Cause cause) {
         return requestFocusHelper(c, a, b, l);
     }
 

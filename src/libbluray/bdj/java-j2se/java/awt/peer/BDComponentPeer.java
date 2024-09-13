@@ -231,7 +231,7 @@ public abstract class BDComponentPeer implements ComponentPeer
         setBounds(x, y, width, height, SET_BOUNDS);
     }
 
-    public boolean requestFocus(Component lightweightChild, boolean temporary, boolean focusedWindowChangeAllowed, long time) {
+    public boolean requestFocus(Component lightweightChild, boolean temporary, boolean focusedWindowChangeAllowed, long time, sun.awt.CausedFocusEvent.Cause cause) {
         return true;
     }
 
