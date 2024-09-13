@@ -111,7 +111,8 @@ struct bluray {
     /* current playlist */
     NAV_TITLE      *title;
     uint32_t       title_idx;
-    uint64_t       s_pos;
+
+    uint64_t       s_pos;       //  current file position in the stream 
 
     /* streams */
     BD_STREAM      st0;       /* main path */
@@ -306,7 +307,7 @@ static uint32_t _update_time_psr_from_stream(BLURAY *bd)
 
 static void _update_stream_psr_by_lang(BD_REGISTERS *regs,
                                        uint32_t psr_lang, uint32_t psr_stream,
-                                       uint32_t enable_flag,
+                                       uint32_t sub_enable_flag,
                                        const MPLS_STREAM *streams, unsigned num_streams,
                                        uint32_t *lang, uint32_t blacklist)
 {
@@ -332,14 +333,14 @@ static void _update_stream_psr_by_lang(BD_REGISTERS *regs,
         /* select first stream */
         stream_idx = 0;
         /* no subtitles if preferred language not found */
-        enable_flag = 0;
+        sub_enable_flag = 0;
     }
 
     stream_lang = str_to_uint32((const char *)streams[stream_idx].lang, 3);
 
     /* avoid enabling subtitles if audio is in the same language */
     if (blacklist && blacklist == stream_lang) {
-        enable_flag = 0;
+        sub_enable_flag = 0;
         BD_DEBUG(DBG_BLURAY, "Subtitles disabled (audio is in the same language)\n");
     }
 
@@ -347,12 +348,11 @@ static void _update_stream_psr_by_lang(BD_REGISTERS *regs,
         *lang = stream_lang;
     }
 
-    /* update PSR */
-
     BD_DEBUG(DBG_BLURAY, "Selected stream %d (language %s)\n", stream_idx, streams[stream_idx].lang);
 
+    /* update PSR */
     bd_psr_write_bits(regs, psr_stream,
-                      (stream_idx + 1) | enable_flag,
+                      (stream_idx + 1) | sub_enable_flag,
                       0x80000fff);
 }
 
@@ -755,12 +755,14 @@ static int _read_block(BLURAY *bd, BD_STREAM *st, uint8_t *buf)
                 }
 
                 if (st->m2ts_filter) {
+
                     int result = m2ts_filter(st->m2ts_filter, buf);
                     if (result < 0) {
                         m2ts_filter_close(&st->m2ts_filter);
                         BD_DEBUG(DBG_BLURAY | DBG_CRIT, "m2ts filter error\n");
                     }
-                }
+
+               }
 
                 BD_DEBUG(DBG_STREAM, "Read unit OK!\n");
 
@@ -2002,8 +2004,8 @@ static int _bd_read(BLURAY *bd, unsigned char *buf, int len)
             if (st->int_buf_off == 6144 || clip_pkt >= st->clip->end_pkt) {
 
                 // Do we need to get the next clip?
-                if (clip_pkt >= st->clip->end_pkt) {
-
+                if (clip_pkt >= st->clip->end_pkt) 
+                {
                     // split read()'s at clip boundary
                     if (out_len) {
                         return out_len;
@@ -2012,24 +2014,26 @@ static int _bd_read(BLURAY *bd, unsigned char *buf, int len)
                     // handle still mode clips
                     if (st->clip->still_mode == BLURAY_STILL_INFINITE) {
                         _queue_event(bd, BD_EVENT_STILL_TIME, 0);
-                        return 0;
+                        return out_len;
                     }
                     if (st->clip->still_mode == BLURAY_STILL_TIME) {
                         if (bd->event_queue) {
                             _queue_event(bd, BD_EVENT_STILL_TIME, st->clip->still_time);
-                            return 0;
+                            return out_len;
                         }
                     }
 
                     // find next clip
                     st->clip = nav_next_clip(bd->title, st->clip);
-                    if (st->clip == NULL) {
+                    if (st->clip == NULL) 
+                    {
                         BD_DEBUG(DBG_BLURAY | DBG_STREAM, "End of title\n");
                         _queue_event(bd, BD_EVENT_END_OF_TITLE, 0);
                         bd->end_of_playlist |= 1;
-                        return 0;
+                        return out_len;
                     }
-                    if (!_open_m2ts(bd, st)) {
+                    if (!_open_m2ts(bd, st)) 
+                    {
                         return -1;
                     }
 
@@ -2051,14 +2055,13 @@ static int _bd_read(BLURAY *bd, unsigned char *buf, int len)
                     }
                     if (st->pg_pid > 0) {
                         if (gc_decode_ts(bd->graphics_controller, st->pg_pid, bd->int_buf, 1, -1) > 0) {
-                            /* render subtitles */
+                            // render subtitles 
                             gc_run(bd->graphics_controller, GC_CTRL_PG_UPDATE, 0, NULL);
                         }
                     }
                     if (bd->st_textst.clip) {
                         _update_textst_timer(bd);
                     }
-
                     st->int_buf_off = st->clip_pos % 6144;
 
                 } else if (r == 0) {
@@ -2356,32 +2359,43 @@ static int _init_ig_stream(BLURAY *bd)
 }
 
 /*
- * select title / angle
+ * close playlist
  */
-
 static void _close_playlist(BLURAY *bd)
 {
-    if (bd->graphics_controller) {
+    if (bd->graphics_controller) 
+    {
         gc_run(bd->graphics_controller, GC_CTRL_RESET, 0, NULL);
     }
 
     /* stopping playback in middle of playlist ? */
-    if (bd->title && bd->st0.clip) {
-        if (bd->st0.clip->ref < bd->title->clip_list.count - 1) {
+    if (bd->title && bd->st0.clip) 
+    {
+        if (bd->st0.clip->ref < bd->title->clip_list.count - 1) 
+        {
             /* not last clip of playlist */
             BD_DEBUG(DBG_BLURAY, "close playlist (not last clip)\n");
-            _queue_event(bd, BD_EVENT_PLAYLIST_STOP, 0);
-        } else {
+        } 
+        else 
+        {
             /* last clip of playlist */
             int clip_pkt = SPN(bd->st0.clip_pos);
             int skip = bd->st0.clip->end_pkt - clip_pkt;
             BD_DEBUG(DBG_BLURAY, "close playlist (last clip), packets skipped %d\n", skip);
-            if (skip > 100) {
-                _queue_event(bd, BD_EVENT_PLAYLIST_STOP, 0);
-            }
         }
+
+        //  always send this if we where playing. we quit for gods sake
+        _queue_event(bd, BD_EVENT_PLAYLIST_STOP, 0);
+    }
+    else
+    if(bd->end_of_playlist)
+    {
+        bd->end_of_playlist = 0;
+        //  send this if we re-open a playlist
+        _queue_event(bd, BD_EVENT_PLAYLIST_STOP, 0);
     }
 
+    //  close the rest
     _close_m2ts(&bd->st0);
     _close_preload(&bd->st_ig);
     _close_preload(&bd->st_textst);
@@ -2458,7 +2472,8 @@ static int _open_playlist(BLURAY *bd, unsigned playlist, unsigned angle)
 
     _update_playlist_psrs(bd);
 
-    if (_open_m2ts(bd, &bd->st0)) {
+    if (_open_m2ts(bd, &bd->st0)) 
+    {
         BD_DEBUG(DBG_BLURAY, "Title %s selected\n", f_name);
 
         _find_next_playmark(bd);
@@ -3142,37 +3157,38 @@ static void _process_psr_write_event(BLURAY *bd, const BD_PSR_EVENT *ev)
         BD_DEBUG(DBG_BLURAY, "PSR write: psr%u = %u\n", ev->psr_idx, ev->new_val);
     }
 
-    switch (ev->psr_idx) {
-
+    switch (ev->psr_idx) 
+    {
         /* current playback position */
-
         case PSR_ANGLE_NUMBER:
             _bdj_event  (bd, BDJ_EVENT_ANGLE,   ev->new_val);
             _queue_event(bd, BD_EVENT_ANGLE,    ev->new_val);
-            break;
+        break;
         case PSR_TITLE_NUMBER:
             _queue_event(bd, BD_EVENT_TITLE,    ev->new_val);
-            break;
+        break;
         case PSR_PLAYLIST:
             _bdj_event  (bd, BDJ_EVENT_PLAYLIST,ev->new_val);
             _queue_event(bd, BD_EVENT_PLAYLIST, ev->new_val);
-            break;
+        break;
         case PSR_PLAYITEM:
             _bdj_event  (bd, BDJ_EVENT_PLAYITEM,ev->new_val);
             _queue_event(bd, BD_EVENT_PLAYITEM, ev->new_val);
-            break;
+        break;
         case PSR_TIME:
             _bdj_event  (bd, BDJ_EVENT_PTS,     ev->new_val);
-            break;
+        break;
 
-        case 102:
-            _bdj_event  (bd, BDJ_EVENT_PSR102,  ev->new_val);
-            break;
-        case 103:
+        case PSR_BACKUP_PSR_BDPLUS_REC:   
+        case PSR_BACKUP_PSR_BDPLUS_SHARED:
+        break;
+        case PSR_BACKUP_PSR_BDPLUS_SEND:        //  needed for bd+ description
             disc_event(bd->disc, DISC_EVENT_APPLICATION, ev->new_val);
-            break;
+        break;
 
-        default:;
+        //  unknown?
+        default:    
+        break;
     }
 }
 
@@ -3185,29 +3201,23 @@ static void _process_psr_change_event(BLURAY *bd, const BD_PSR_EVENT *ev)
     switch (ev->psr_idx) {
 
         /* current playback position */
-
         case PSR_TITLE_NUMBER:
             disc_event(bd->disc, DISC_EVENT_TITLE, ev->new_val);
-            break;
-
+        break;
         case PSR_CHAPTER:
             _bdj_event  (bd, BDJ_EVENT_CHAPTER, ev->new_val);
             if (ev->new_val != 0xffff) {
                 _queue_event(bd, BD_EVENT_CHAPTER,  ev->new_val);
             }
-            break;
-
+        break;
         /* stream selection */
-
         case PSR_IG_STREAM_ID:
             _queue_event(bd, BD_EVENT_IG_STREAM, ev->new_val);
-            break;
-
+        break;
         case PSR_PRIMARY_AUDIO_ID:
             _bdj_event(bd, BDJ_EVENT_AUDIO_STREAM, ev->new_val);
             _queue_event(bd, BD_EVENT_AUDIO_STREAM, ev->new_val);
-            break;
-
+        break;
         case PSR_PG_STREAM:
             _bdj_event(bd, BDJ_EVENT_SUBTITLE, ev->new_val);
             if ((ev->new_val & 0x80000fff) != (ev->old_val & 0x80000fff)) {
@@ -3224,8 +3234,7 @@ static void _process_psr_change_event(BLURAY *bd, const BD_PSR_EVENT *ev)
                 }
             }
             bd_mutex_unlock(&bd->mutex);
-
-            break;
+        break;
 
         case PSR_SECONDARY_AUDIO_VIDEO:
             /* secondary video */
@@ -3628,6 +3637,7 @@ static int _run_hdmv(BLURAY *bd)
 
 static int _read_ext(BLURAY *bd, unsigned char *buf, int len, BD_EVENT *event)
 {
+    /* first check if we had an event */
     if (_get_event(bd, event)) {
         return 0;
     }
@@ -3688,11 +3698,13 @@ static int _read_ext(BLURAY *bd, unsigned char *buf, int len, BD_EVENT *event)
     }
 
     int bytes = _bd_read_locked(bd, buf, len);
-
     if (bytes == 0) {
 
         // if no next clip (=end of title), resume HDMV VM
-        if (!bd->st0.clip && bd->title_type == title_hdmv) {
+        if (!bd->st0.clip && bd->title_type == title_hdmv) 
+        {
+            //  we do not want to reset the hdmv, as this resets everything (current buttons, etc) for menus
+            //  just rerun the stream from the start....
             hdmv_vm_resume(bd->hdmv_vm);
             bd->hdmv_suspended = !hdmv_vm_running(bd->hdmv_vm);
             BD_DEBUG(DBG_BLURAY, "bd_read_ext(): reached end of playlist. hdmv_suspended=%d\n", bd->hdmv_suspended);
