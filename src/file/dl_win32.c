@@ -63,17 +63,17 @@ void *dl_dlopen(const char *path, const char *version)
     int iresult;
     DWORD flags = 0;
 
-    name = str_printf("%s.dll", path);
+    name = str_printf("%s-%s.dll", path, version);
     if (!name) {
         BD_DEBUG(DBG_FILE | DBG_CRIT, "out of memory\n");
         return NULL;
     }
 
     iresult = MultiByteToWideChar(CP_UTF8, 0, name, -1, wname, MAX_PATH);
-    X_FREE(name);
 
     if (!iresult) {
-        BD_DEBUG(DBG_FILE, "can't convert file name '%s'\n", path);
+        X_FREE(name);
+        BD_DEBUG(DBG_BLURAY | DBG_CRIT, "can't convert file name '%s'\n", name);
         return NULL;
     }
 
@@ -82,16 +82,17 @@ void *dl_dlopen(const char *path, const char *version)
                        "SetDefaultDllDirectories") != NULL)
 #endif
         flags = LOAD_LIBRARY_SEARCH_APPLICATION_DIR |
-                LOAD_LIBRARY_SEARCH_SYSTEM32;
-
+                LOAD_LIBRARY_SEARCH_SYSTEM32 ;
+    
     result = LoadLibraryExW(wname, NULL, flags);
-
     if (!result) {
         char buf[128];
-        BD_DEBUG(DBG_FILE, "can't open library '%s': %s\n", path, dlerror(buf, sizeof(buf)));
+        BD_DEBUG(DBG_BLURAY | DBG_CRIT, "can't open library '%s': %s\n", name, dlerror(buf, sizeof(buf)));
     } else {
-        BD_DEBUG(DBG_FILE, "opened library '%s'\n", path);
+        BD_DEBUG(DBG_FILE, "opened library '%s'\n", name);
     }
+
+    X_FREE(name);
 
     return result;
 }
