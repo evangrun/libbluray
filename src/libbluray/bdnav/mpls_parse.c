@@ -212,7 +212,7 @@ _parse_stream(BITSTREAM *bits, MPLS_STREAM *s)
 }
 
 static int
-_parse_stn(BITSTREAM *bits, MPLS_STN *stn)
+parse_stream_from_clip(BITSTREAM *bits, MPLS_STN *stn)
 {
     int len;
     int64_t pos;
@@ -237,11 +237,6 @@ _parse_stn(BITSTREAM *bits, MPLS_STN *stn)
     stn->num_secondary_video = bs_read(bits, 8);
     stn->num_pip_pg          = bs_read(bits, 8);
     stn->num_dv              = bs_read(bits, 8);
-
-    if (stn->num_audio > 4)
-    {
-        BD_DEBUG(DBG_NAV | DBG_CRIT, "Found audio %d\n", stn->num_audio);
-    }
 
     // 4 reserve bytes
     bs_skip(bits, 4 * 8);
@@ -528,7 +523,8 @@ _parse_playitem(BITSTREAM *bits, MPLS_PI *pi)
     }
 
     /*  parse the stream that comes with this clip entry */
-    if (!_parse_stn(bits, &pi->stn)) {
+    if (!parse_stream_from_clip(bits, &pi->stn)) 
+    {
         return 0;
     }
 
