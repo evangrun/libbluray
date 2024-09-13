@@ -125,7 +125,8 @@ static BD_PG_OBJECT *_find_object(PG_DISPLAY_SET *s, unsigned object_id)
 {
     unsigned ii;
 
-    for (ii = 0; ii < s->num_object; ii++) {
+    for (ii = 0; ii < s->num_object; ii++) 
+    {
         if (s->object[ii].id == object_id) {
             return &s->object[ii];
         }
@@ -196,61 +197,68 @@ static BD_PG_OBJECT *_find_object_for_button(PG_DISPLAY_SET *s,
                                              BD_IG_BUTTON *button, int state,
                                              BOG_DATA *bog_data)
 {
-    BD_PG_OBJECT *object   = NULL;
     unsigned object_id     = 0xffff;
     unsigned object_id_end = 0xffff;
     unsigned repeat        = 0;
 
-    switch (state) {
-        case BTN_NORMAL:
+    switch (state) 
+    {
+        case BTN_NORMAL:        //  button is normal state
             object_id     = button->normal_start_object_id_ref;
             object_id_end = button->normal_end_object_id_ref;
             repeat        = button->normal_repeat_flag;
-            break;
-        case BTN_SELECTED:
+        break;
+        case BTN_SELECTED:      //  button is selected state
             object_id     = button->selected_start_object_id_ref;
             object_id_end = button->selected_end_object_id_ref;
             repeat        = button->selected_repeat_flag;
-            break;
-        case BTN_ACTIVATED:
+        break;
+        case BTN_ACTIVATED:     //  button is actived
             object_id     = button->activated_start_object_id_ref;
             object_id_end = button->activated_end_object_id_ref;
-            break;
+        break;
     }
 
-    if (bog_data) {
+    //  how should we be draw -> this is fucked up
+    if (bog_data) 
+    {
         bog_data->effect_running = 0;
-        if (bog_data->animate_indx >= 0) {
+        if (bog_data->animate_indx >= 0) 
+        {
             int range = object_id_end - object_id;
 
-            if (range > 0 && object_id < 0xffff && object_id_end < 0xffff) {
-                GC_TRACE("animate button #%d: animate_indx %d, range %d, repeat %d\n",
-                         button->id, bog_data->animate_indx, range, repeat);
-
+            if (range > 0 && object_id < 0xffff && object_id_end < 0xffff) 
+            {
                 object_id += bog_data->animate_indx % (range + 1);
                 bog_data->animate_indx++;
-                if (!repeat) {
-                    if (bog_data->animate_indx > range) {
+                if (!repeat) 
+                {
+                    if (bog_data->animate_indx > range) 
+                    {
                         /* terminate animation to the last object */
                         bog_data->animate_indx = -1;
-                    } else {
+                    } 
+                    else 
+                    {
                         bog_data->effect_running = 1;
                     }
                 }
-            } else {
+            } 
+            else 
+            {
                 /* no animation for this button */
                 bog_data->animate_indx = -1;
             }
-        } else {
-            if (object_id_end < 0xfffe) {
+        } 
+        if(bog_data->animate_indx == -1)
+        {
+            if (object_id_end < 0xfffe) 
                 object_id = object_id_end;
-            }
         }
     }
 
-    object = _find_object(s, object_id);
-
-    return object;
+    //  find this pobject
+    return _find_object(s, object_id);
 }
 
 static BD_TEXTST_REGION_STYLE *_find_region_style(BD_TEXTST_DIALOG_STYLE *p, unsigned region_style_id)
@@ -269,14 +277,6 @@ static BD_TEXTST_REGION_STYLE *_find_region_style(BD_TEXTST_DIALOG_STYLE *p, uns
 /*
  * util
  */
-
-static int _areas_overlap(BOG_DATA *a, BOG_DATA *b)
-{
-    return !(a->x + a->w <= b->x        ||
-             a->x        >= b->x + b->w ||
-             a->y + a->h <= b->y        ||
-             a->y        >= b->y + b->h);
-}
 
 static int _is_button_enabled(GRAPHICS_CONTROLLER *gc, BD_IG_PAGE *page, unsigned button_id)
 {
@@ -343,15 +343,18 @@ static uint16_t _find_selected_button_id(GRAPHICS_CONTROLLER *gc)
     return 0xffff;
 }
 
+//  after some timeout do an action?
 static void _reset_user_timeout(GRAPHICS_CONTROLLER *gc)
 {
     gc->user_timeout = 0;
 
-    if (gc->igs->ics->interactive_composition.ui_model == IG_UI_MODEL_POPUP ||
-        bd_psr_read(gc->regs, PSR_MENU_PAGE_ID) != 0) {
-
+    if( (gc->igs->ics->interactive_composition.ui_model == IG_UI_MODEL_POPUP) ||
+        (bd_psr_read(gc->regs, PSR_MENU_PAGE_ID) != 0) 
+    )
+    {
         gc->user_timeout = gc->igs->ics->interactive_composition.user_timeout_duration;
-        if (gc->user_timeout) {
+        if (gc->user_timeout) 
+        {
             gc->user_timeout += bd_get_scr();
         }
     }
@@ -1264,50 +1267,14 @@ static void _render_button(GRAPHICS_CONTROLLER *gc, BD_IG_BUTTON *button, BD_PG_
                            int state, BOG_DATA *bog_data)
 {
     BD_PG_OBJECT *object = _find_object_for_button(gc->igs, button, state, bog_data);
-    if (!object) {
-        GC_TRACE("_render_button(#%d): object (state %d) not found\n", button->id, state);
-
+    if (!object) 
+    {
+        GC_TRACE("render_button #%d: object (state %d) not found.\n", button->id, state);
         _clear_bog_area(gc, bog_data);
-
         return;
     }
 
-    /* object already rendered ? */
-    if (bog_data->visible_object_id == object->id &&
-        bog_data->x == button->x_pos && bog_data->y == button->y_pos &&
-        bog_data->w == object->width && bog_data->h == object->height) {
-
-        GC_TRACE("skipping already rendered button #%d (object #%d at %d,%d %dx%d)\n",
-                 button->id, object->id,
-                 button->x_pos, button->y_pos, object->width, object->height);
-
-        return;
-    }
-
-    /* new object is smaller than already drawn one, or in different position ? -> need to render background */
-    if (bog_data->w > object->width ||
-        bog_data->h > object->height ||
-        bog_data->x != button->x_pos ||
-        bog_data->y != button->y_pos) {
-
-        /* make sure we won't wipe other buttons */
-        unsigned ii, skip = 0;
-        for (ii = 0; &gc->bog_data[ii] != bog_data; ii++) {
-            if (_areas_overlap(bog_data, &gc->bog_data[ii]))
-                skip = 1;
-            /* FIXME: clean non-overlapping area */
-        }
-
-        GC_TRACE("object size changed, %sclearing background at %d,%d %dx%d\n",
-                 skip ? " ** NOT ** " : "",
-                 bog_data->x, bog_data->y, bog_data->w, bog_data->h);
-
-        if (!skip) {
-            _clear_bog_area(gc, bog_data);
-        }
-    }
-
-    GC_TRACE("render button #%d using object #%d at %d,%d %dx%d\n",
+    GC_TRACE("render button #%d using object #%d at x:%d,Y:%d,w:%d,h:%d\n",
              button->id, object->id,
              button->x_pos, button->y_pos, object->width, object->height);
 
@@ -1437,8 +1404,7 @@ static int _render_page(GRAPHICS_CONTROLLER *gc,
         return -1;
     }
 
-    GC_TRACE("rendering page #%d using palette #%d. page has %d bogs\n",
-          page->id, page->palette_id_ref, page->num_bogs);
+//    GC_TRACE("rendering page #%d using palette #%d. page has %d bogs\n", page->id, page->palette_id_ref, page->num_bogs);
 
     if (!gc->ig_open) {
         _open_osd(gc, BD_OVERLAY_IG, 0, 0,
@@ -1446,44 +1412,55 @@ static int _render_page(GRAPHICS_CONTROLLER *gc,
                   s->ics->video_descriptor.video_height);
     }
 
-    for (ii = 0; ii < page->num_bogs; ii++) {
+    for (ii = 0; ii < page->num_bogs; ii++) 
+    {
         BD_IG_BOG    *bog      = &page->bog[ii];
         unsigned      valid_id = gc->bog_data[ii].enabled_button;
-        BD_IG_BUTTON *button;
+        BD_IG_BUTTON *buttonBog;
 
-        button = _find_button_bog(bog, valid_id);
-
-        if (!button) {
+        buttonBog = _find_button_bog(bog, valid_id);
+        if (!buttonBog)
+        {
             GC_TRACE("_render_page(): bog %d: button %d not found\n", ii, valid_id);
 
             // render background
             _clear_bog_area(gc, &gc->bog_data[ii]);
 
-        } else if (button->id == activated_button_id) {
-            GC_TRACE("    button #%d activated\n", button->id);
+        } 
+        else 
+        if (buttonBog->id == activated_button_id)
+        {
+            GC_TRACE("    button #%d activated\n", buttonBog->id);
+            _render_button(gc, buttonBog, palette, BTN_ACTIVATED, &gc->bog_data[ii]);
 
-            _render_button(gc, button, palette, BTN_ACTIVATED, &gc->bog_data[ii]);
+        } 
+        else 
+        if(buttonBog->id == selected_button_id)
+        {
 
-        } else if (button->id == selected_button_id) {
-
-            if (button->auto_action_flag && !gc->auto_action_triggered) {
-                if (cmds) {
+            if (buttonBog->auto_action_flag && !gc->auto_action_triggered) 
+            {
+                if (cmds) 
+                {
                     if (!auto_activate_button) {
-                        auto_activate_button = button;
+                        auto_activate_button = buttonBog;
                     }
-                } else {
-                    GC_ERROR("   auto-activate #%d not triggered (!cmds)\n", button->id);
+                } 
+                else 
+                {
+                    GC_ERROR("   auto-activate #%d not triggered (!cmds)\n", buttonBog->id);
                 }
 
-                _render_button(gc, button, palette, BTN_ACTIVATED, &gc->bog_data[ii]);
+                _render_button(gc, buttonBog, palette, BTN_ACTIVATED, &gc->bog_data[ii]);
 
             } else {
-                _render_button(gc, button, palette, BTN_SELECTED, &gc->bog_data[ii]);
+                _render_button(gc, buttonBog, palette, BTN_SELECTED, &gc->bog_data[ii]);
             }
 
-        } else {
-            _render_button(gc, button, palette, BTN_NORMAL, &gc->bog_data[ii]);
-
+        } 
+        else 
+        {
+            _render_button(gc, buttonBog, palette, BTN_NORMAL, &gc->bog_data[ii]);
         }
 
         gc->button_effect_running    += gc->bog_data[ii].effect_running;
@@ -1491,23 +1468,34 @@ static int _render_page(GRAPHICS_CONTROLLER *gc,
     }
 
     /* process auto-activate */
-    if (auto_activate_button) {
+    if (auto_activate_button) 
+    {
         GC_TRACE("   auto-activate #%d\n", auto_activate_button->id);
 
         /* do not trigger auto action before single-loop animations have been terminated */
-        if (gc->button_effect_running) {
+        //  offcourse we do!
+/*
+        if (gc->button_effect_running) 
+        {
             GC_TRACE("   auto-activate #%d not triggered (ANIMATING)\n", auto_activate_button->id);
-        } else if (cmds) {
+        } 
+        else 
+*/
+        if (cmds)
+        {
             cmds->num_nav_cmds = auto_activate_button->num_nav_cmds;
             cmds->nav_cmds     = auto_activate_button->nav_cmds;
 
             gc->auto_action_triggered = 1;
-        } else {
+        } 
+        else 
+        {
             GC_ERROR("_render_page(): auto-activate ignored (missing result buffer)\n");
         }
     }
 
-    if (gc->ig_dirty) {
+    if (gc->ig_dirty) 
+    {
         _flush_osd(gc, BD_OVERLAY_IG, -1);
         gc->ig_dirty = 0;
         return 1;
@@ -1543,10 +1531,11 @@ static int _user_input(GRAPHICS_CONTROLLER *gc, uint32_t key, GC_NAV_CMDS *cmds)
         return -1;
     }
 
-    if (!gc->ig_drawn) {
-        GC_ERROR("_user_input(): menu not visible\n");
-        return 0;
-    }
+    //  keep this enabled. if for some reason we cant find a button we are stuck
+//    if (!gc->ig_drawn) {
+//        GC_ERROR("_user_input(): menu not visible\n");
+//        return 0;
+//    }
 
     _reset_user_timeout(gc);
 
@@ -1660,6 +1649,7 @@ static void _set_button_page(GRAPHICS_CONTROLLER *gc, uint32_t param)
     /* 10.4.3.4 (D) */
 
     if (!page_flag && !button_flag) {
+        GC_TRACE("  no page_flag and button_flag \n");
         return;
     }
 
@@ -1671,30 +1661,32 @@ static void _set_button_page(GRAPHICS_CONTROLLER *gc, uint32_t param)
             return;
         }
 
-        page = _find_page(&s->ics->interactive_composition, page_id);
-
         /* invalid page --> command is ignored */
-        if (!page) {
+        page = _find_page(&s->ics->interactive_composition, page_id);
+        if (!page) 
+        {
             GC_TRACE("  page is invalid\n");
             return;
         }
 
         /* page changes */
-
         _select_page(gc, page_id, !effect_flag);
 
-    } else {
+    } 
+    else 
+    {
         /* page does not change */
         page_id = bd_psr_read(gc->regs, PSR_MENU_PAGE_ID);
         page    = _find_page(&s->ics->interactive_composition, page_id);
-
-        if (!page) {
+        if (!page) 
+        {
             GC_ERROR("_set_button_page(): PSR_MENU_PAGE_ID refers to unknown page %d\n", page_id);
             return;
         }
     }
 
-    if (button_flag) {
+    if (button_flag) 
+    {
         /* find correct button and overlap group */
         button = _find_button_page(page, button_id, &bog_idx);
 
@@ -1823,9 +1815,9 @@ static int _mouse_move(GRAPHICS_CONTROLLER *gc, uint16_t x, uint16_t y, GC_NAV_C
 
         if (x < button->x_pos || y < button->y_pos)
             continue;
-
-        /* Check for SELECTED state object (button that can be selected) */
-        BD_PG_OBJECT *object = _find_object_for_button(s, button, BTN_SELECTED, NULL);
+    
+        //  need a real drawn button for this 
+        BD_PG_OBJECT* object = _find_object(s, button->normal_start_object_id_ref);
         if (!object)
             continue;
 
