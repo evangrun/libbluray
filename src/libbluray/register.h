@@ -73,6 +73,10 @@ typedef enum {
     PSR_BACKUP_PSR10     = 42,
     PSR_BACKUP_PSR11     = 43,
     PSR_BACKUP_PSR12     = 44,
+
+    PSR_BACKUP_PSR_BDPLUS_REC       = 102,
+    PSR_BACKUP_PSR_BDPLUS_SEND      = 103,
+    PSR_BACKUP_PSR_BDPLUS_SHARED    = 104,
     /* 48-61: caps for characteristic text subtitle */
 } bd_psr_idx;
 
