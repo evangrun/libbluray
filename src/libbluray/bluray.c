@@ -612,6 +612,9 @@ static void _close_m2ts(BD_STREAM *st)
     m2ts_filter_close(&st->m2ts_filter);
 }
 
+//  open a file containing all the streams and all the commands for the VM
+//  an m2ts is linked to a clip, several clips form a playlist
+//
 static int _open_m2ts(BLURAY *bd, BD_STREAM *st)
 {
     _close_m2ts(st);
@@ -957,11 +960,13 @@ static int _run_gc(BLURAY *bd, gc_ctrl_e msg, uint32_t param)
 
 static void _check_bdj(BLURAY *bd)
 {
-    if (!bd->disc_info.bdj_handled) {
-        if (!bd->disc || bd->disc_info.bdj_detected) {
-
+    if (!bd->disc_info.bdj_handled) 
+    {
+        if (!bd->disc || bd->disc_info.bdj_detected) 
+        {
             /* Check if jvm + jar can be loaded ? */
-            switch (bdj_jvm_available(&bd->bdj_config)) {
+            switch (bdj_jvm_available(&bd->bdj_config)) 
+            {
                 case BDJ_CHECK_OK:
                     bd->disc_info.bdj_handled = 1;
                     /* fall thru */
@@ -1464,15 +1469,17 @@ BLURAY *bd_init(void)
 
     BD_DEBUG(DBG_BLURAY, "libbluray version "BLURAY_VERSION_STRING"\n");
 
+    //  start normal bluray
     BLURAY *bd = calloc(1, sizeof(BLURAY));
-
-    if (!bd) {
+    if (!bd) 
+    {
         BD_DEBUG(DBG_BLURAY | DBG_CRIT, "Can't allocate memory\n");
         return NULL;
     }
 
     bd->regs = bd_registers_init();
-    if (!bd->regs) {
+    if (!bd->regs) 
+    {
         BD_DEBUG(DBG_BLURAY, "bd_registers_init() failed\n");
         X_FREE(bd);
         return NULL;
@@ -1481,8 +1488,10 @@ BLURAY *bd_init(void)
     bd_mutex_init(&bd->mutex);
     bd_mutex_init(&bd->argb_buffer_mutex);
 
-    env = getenv("LIBBLURAY_PERSISTENT_STORAGE");
-    if (env) {
+    //  load the environment for the jar files
+    env = NULL;  //  getenv("LIBBLURAY_PERSISTENT_STORAGE");
+    if (env) 
+    {
         int v = (!strcmp(env, "yes")) ? 1 : (!strcmp(env, "no")) ? 0 : atoi(env);
         bd->bdj_config.no_persistent_storage = !v;
     }
@@ -2038,8 +2047,8 @@ static int _bd_read(BLURAY *bd, unsigned char *buf, int len)
                     }
 
                     if (st->clip->connection == CONNECT_NON_SEAMLESS) {
-                        /* application layer demuxer buffers must be reset here */
-                        _queue_event(bd, BD_EVENT_DISCONTINUITY, st->clip->in_time);
+                        //  application layer demuxer buffers must be reset here 
+                        _queue_event(bd, BD_EVENT_DISCONTINUITY, st->clip->clip_id);    //  @@@ send the clip index
                     }
 
                 }

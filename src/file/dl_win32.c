@@ -63,7 +63,10 @@ void *dl_dlopen(const char *path, const char *version)
     int iresult;
     DWORD flags = 0;
 
-    name = str_printf("%s-%s.dll", path, version);
+    if(version)
+        name = str_printf("%s-%s.dll", path, version);
+    else
+        name = str_printf("%s.dll", path);
     if (!name) {
         BD_DEBUG(DBG_FILE | DBG_CRIT, "out of memory\n");
         return NULL;
