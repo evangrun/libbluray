@@ -166,7 +166,7 @@ class BDJClassLoader extends URLClassLoader {
         if (name.equals("java.io.File")) {
             Class c = super.loadClass(name);
             if (c != null) {
-                java.io.BDFileSystem.init(c);
+                java.ioutil.BDFileSystem.init(c);
             }
             return c;
         }

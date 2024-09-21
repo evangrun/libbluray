@@ -19,7 +19,7 @@
 
 package org.dvb.ui;
 
-import java.awt.Color;
+import java.awt.Color;	
 import javax.tv.graphics.AlphaColor;
 
 public class DVBColor extends AlphaColor {

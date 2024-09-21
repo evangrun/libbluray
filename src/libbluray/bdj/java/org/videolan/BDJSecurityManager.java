@@ -357,7 +357,7 @@ final class BDJSecurityManager extends SecurityManager {
     private String getCanonPath(String origPath) {
         String suffix = "";
 
-        if (!java.io.BDFileSystem.isAbsolutePath(origPath)) {
+        if (!java.ioutil.BDFileSystem.isAbsolutePath(origPath)) {
             String home = BDJXletContext.getCurrentXletHome();
             if (home == null) {
                 logger.error("Relative path " + origPath + " outside Xlet context\n" + Logger.dumpStack());

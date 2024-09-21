@@ -68,7 +68,7 @@ typedef struct {
     char *cache_root;        /* BD-J binding unit data area */
 
     char *java_home;         /* JAVA_HOME override from application */
-    char *classpath[2];      /* BD-J implementation class path (location of libbluray.jar) */
+    char *classpath;        /* BD-J implementation class path (location of libbluray.jar) */
 
     uint8_t no_persistent_storage; /* disable persistent storage (remove files at close) */
 } BDJ_CONFIG;

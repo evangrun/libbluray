@@ -20,8 +20,6 @@
 
 package org.videolan;
 
-import java.awt.BDFontMetrics;
-import java.awt.BDToolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -29,6 +27,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
+
+import java.awtutil.BDToolkit;
+import java.awtutil.BDFontMetrics;
 
 import javax.media.PackageManager;
 import javax.tv.service.SIManager;
@@ -186,7 +187,7 @@ public class Libbluray {
         }
 
         /* enable filesystem hooks */
-        java.io.BDFileSystem.setBooted();
+        java.ioutil.BDFileSystem.setBooted();
     }
 
     private static String canonicalize(String path, boolean create) {
@@ -769,13 +770,13 @@ public class Libbluray {
             case 17: /* BD_VK_MOUSE_ACTIVATE */
                 result = false;
                 if ((param & 0x80000000) != 0) {
-                    result = java.awt.BDJHelper.postMouseEvent(MouseEvent.MOUSE_PRESSED) || result;
+                    result = java.awtutil.BDJHelper.postMouseEvent(MouseEvent.MOUSE_PRESSED) || result;
                 }
                 if ((param & 0x40000000) != 0) {
-                    result = java.awt.BDJHelper.postMouseEvent(MouseEvent.MOUSE_CLICKED) || result;
+                    result = java.awtutil.BDJHelper.postMouseEvent(MouseEvent.MOUSE_CLICKED) || result;
                 }
                 if ((param & 0x20000000) != 0) {
-                    result = java.awt.BDJHelper.postMouseEvent(MouseEvent.MOUSE_RELEASED) || result;
+                    result = java.awtutil.BDJHelper.postMouseEvent(MouseEvent.MOUSE_RELEASED) || result;
                 }
                 key = -1;
                 break;
@@ -799,7 +800,7 @@ public class Libbluray {
             }
             break;
         case BDJ_EVENT_MOUSE:
-            result = java.awt.BDJHelper.postMouseEvent(param >> 16, param & 0xffff);
+            result = java.awtutil.BDJHelper.postMouseEvent(param >> 16, param & 0xffff);
             break;
         default:
             System.err.println("Unknown event " + event + "." + param);

@@ -40,7 +40,7 @@ public class DataSource extends javax.media.protocol.DataSource {
         return contentType;
     }
 
-    public void connect() throws IOException {
+    public void connect() {
         contentType = "audio";
     }
 
@@ -48,12 +48,12 @@ public class DataSource extends javax.media.protocol.DataSource {
         contentType = "unknown";
     }
 
-    public void start() throws IOException {
-        if (contentType.equals("unknown"))
-            throw new IOException("Unknown content type.");
+    public void start() {
+//        if (contentType.equals("unknown"))
+    	//            throw new IOException("Unknown content type.");
     }
 
-    public void stop() throws IOException {
+    public void stop() {
     }
 
     private String contentType = "unknown";

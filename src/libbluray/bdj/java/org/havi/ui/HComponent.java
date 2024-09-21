@@ -24,7 +24,7 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import org.dvb.ui.TestOpacity;
 
-import java.awt.BDToolkit;
+import java.awtutil.BDToolkit;
 
 public abstract class HComponent extends Component implements HMatteLayer, TestOpacity {
 

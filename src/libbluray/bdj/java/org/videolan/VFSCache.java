@@ -28,7 +28,8 @@ import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import java.io.BDFileSystem;
+import java.ioutil.BDFileSystem;
+
 import org.videolan.bdjo.AppCache;
 
 class VFSCache {

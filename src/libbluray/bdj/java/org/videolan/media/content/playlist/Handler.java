@@ -74,7 +74,7 @@ public class Handler extends BDHandler {
         controls[17] = new VideoFormatControlImpl(this);
     }
 
-    public void setSource(DataSource source) throws IOException, IncompatibleSourceException {
+    public void setSource(DataSource source) throws IncompatibleSourceException {
 
         /* validate source */
         BDLocator newLocator;
@@ -97,7 +97,7 @@ public class Handler extends BDHandler {
         PlaylistInfo newPi = Libbluray.getPlaylistInfo(newLocator.getPlayListId());
         if (newPi == null) {
             logger.error("getPlaylistInfo failed for " + newLocator);
-            throw new IOException();
+            throw new IncompatibleSourceException();
         }
 
         /* commit changes and prefetch */

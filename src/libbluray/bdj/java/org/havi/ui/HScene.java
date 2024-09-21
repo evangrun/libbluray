@@ -19,7 +19,7 @@
 
 package org.havi.ui;
 
-import java.awt.Component;
+import java.awt.Component;	
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -37,7 +37,8 @@ import org.havi.ui.event.HEventGroup;
 import org.videolan.BDJXletContext;
 import org.videolan.GUIManager;
 import org.videolan.Logger;
-import java.awt.BDToolkit;
+
+import java.awtutil.BDToolkit;
 
 
 public class HScene extends Container implements HComponentOrdering {

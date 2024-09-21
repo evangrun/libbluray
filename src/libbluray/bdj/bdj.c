@@ -52,7 +52,6 @@
 #endif
 
 #define BDJ_JARFILE         "libbluray.jar"
-#define BDJ_AWT_JARFILE     "libbluray-awt.jar"
 
 struct bdjava_s {
 #if defined(__APPLE__)
@@ -516,11 +515,10 @@ void bdj_config_cleanup(BDJ_CONFIG *p)
     X_FREE(p->cache_root);
     X_FREE(p->persistent_root);
     X_FREE(p->java_home);
-    X_FREE(p->classpath[0]);
-    X_FREE(p->classpath[1]);
+    X_FREE(p->classpath);
 }
 
-static char * find_libbluray_jar_base()
+static char * _find_libbluray_jar()
 {
     unsigned i;
 
@@ -531,7 +529,7 @@ static char * find_libbluray_jar_base()
         for(i =0; i<2; i++) 
         {
             const char * relinstalldir[2] = { "",
-                                              DIR_SEP "java" DIR_SEP };
+                                              "java" DIR_SEP };
             char *cp = str_printf("%s%s%s", lib_path, relinstalldir[i], BDJ_JARFILE);
             if (!cp) 
             {
@@ -552,58 +550,16 @@ static char * find_libbluray_jar_base()
     return NULL;
 }
 
-static char * find_libbluray_jar_awt()
+static int find_libbluray_jar(BDJ_CONFIG *storage)
 {
-    unsigned i;
-
-    // check directory where libbluray.so was loaded from
-    const char* lib_path = dl_get_path();
-    if (lib_path)
+    if (!storage->classpath) 
     {
-        for (i = 0; i < 2; i++)
-        {
-            const char* relinstalldir[2] = { "",
-                                              DIR_SEP "java" DIR_SEP };
-            char* cp = str_printf("%s%s%s", lib_path, relinstalldir[i], BDJ_AWT_JARFILE);
-            if (!cp)
-            {
-                BD_DEBUG(DBG_CRIT, "out of memory\n");
-                return NULL;
-            }
-
-            BD_DEBUG(DBG_BDJ, "Checking %s ...\n", cp);
-            if (_can_read_file(cp))
-            {
-                BD_DEBUG(DBG_BDJ, "using %s\n", cp);
-                return cp;
-            }
-            X_FREE(cp);
-        }
-    }
-    BD_DEBUG(DBG_BDJ | DBG_CRIT, BDJ_AWT_JARFILE" not found.\n");
-    return NULL;
-}
-
-static int _find_libbluray_jar(BDJ_CONFIG *storage)
-{
-    if (!storage->classpath[0]) 
-    {
-        storage->classpath[0] = find_libbluray_jar_base();
-        X_FREE(storage->classpath[1]);
-        if (!storage->classpath[0])
+        storage->classpath = _find_libbluray_jar();
+        if (!storage->classpath)
             return 0;
     }
 
-    if (!storage->classpath[1]) 
-    {
-        storage->classpath[1] = find_libbluray_jar_awt();
-        if (!storage->classpath[1]) {
-            X_FREE(storage->classpath[0]);
-            X_FREE(storage->classpath[1]);
-        }
-    }
-
-    return !!storage->classpath[0];
+    return !!storage->classpath;
 }
 
 static const char *_bdj_persistent_root(BDJ_CONFIG *storage)
@@ -696,9 +652,11 @@ static int _get_method(JNIEnv *env, jclass *cls, jmethodID *method_id,
 
 static int _bdj_init(JNIEnv *env, struct bluray *bd, const char *disc_root, const char *bdj_disc_id, BDJ_CONFIG *storage)
 {
+    //  register everything
     if (!bdj_register_native_methods(env)) 
     {
         BD_DEBUG(DBG_BDJ | DBG_CRIT, "Couldn't register native methods.\n");
+        return 0;
     }
 
     // initialize class org.videolan.Libbluray
@@ -711,6 +669,7 @@ static int _bdj_init(JNIEnv *env, struct bluray *bd, const char *disc_root, cons
         return 0;
     }
 
+    //  call method for disk id
     const char *disc_id = (bdj_disc_id && bdj_disc_id[0]) ? bdj_disc_id : "00000000000000000000000000000000";
     jlong param_bdjava_ptr = (jlong)(intptr_t) bd;
     jstring param_disc_id = (*env)->NewStringUTF(env, disc_id);
@@ -728,6 +687,7 @@ static int _bdj_init(JNIEnv *env, struct bluray *bd, const char *disc_root, cons
     (*env)->DeleteLocalRef(env, param_persistent_root);
     (*env)->DeleteLocalRef(env, param_buda_root);
 
+    //  check
     if ((*env)->ExceptionOccurred(env)) 
     {
         (*env)->ExceptionDescribe(env);
@@ -752,7 +712,7 @@ int bdj_jvm_available(BDJ_CONFIG *storage)
     dl_dlclose(jvm_lib);
 
     //  find our jar files
-    if (!_find_libbluray_jar(storage)) 
+    if (!find_libbluray_jar(storage)) 
     {
         BD_DEBUG(DBG_BDJ | DBG_CRIT, "BD-J check: Failed to load libbluray.jar\n");
         return BDJ_CHECK_NO_JAR;
@@ -868,7 +828,7 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
     {
         BD_DEBUG(DBG_BDJ | DBG_CRIT, "Couldn't find symbol JNI_CreateJavaVM.\n");
         return 0;
-    }
+    } 
 
     //  check for environment
     java_9 = !!dl_dlsym(jvm_lib, "JVM_DefineModule");
@@ -879,7 +839,7 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
     //  add base
     memset(option, 0, sizeof(option));
     //  add our classpath
-    option[n++].optionString = str_printf("-Djava.class.path==%s", cfg->classpath[0]);
+    option[n++].optionString = str_printf("-Djava.class.path=%s", cfg->classpath);
 
     // AWT needs to access logger and Xlet context 
     option[n++].optionString = str_dup("--add-opens=java.base/org.videolan=java.desktop");
@@ -978,7 +938,8 @@ BDJAVA* bdj_open(const char *path, struct bluray *bd,
 {
     BD_DEBUG(DBG_BDJ, "bdj_open()\n");
 
-    if (!_find_libbluray_jar(cfg)) {
+    if (!find_libbluray_jar(cfg)) 
+    {
         BD_DEBUG(DBG_BDJ | DBG_CRIT, "BD-J start failed: " BDJ_JARFILE " not found.\n");
         return NULL;
     }
@@ -1047,7 +1008,6 @@ BDJAVA* bdj_open(const char *path, struct bluray *bd,
         bdj_close(bdjava);
         return NULL;
     }
-
     /* detach java main thread (CreateJavaVM attachs calling thread to JVM) */
     (*bdjava->jvm)->DetachCurrentThread(bdjava->jvm);
 
@@ -1077,6 +1037,7 @@ void bdj_close(BDJAVA *bdjava)
             attach = 1;
         }
 
+        //  try a shutdown
         if (_get_method(env, &shutdown_class, &shutdown_id, "org/videolan/Libbluray", "shutdown", "()V")) 
         {
             (*env)->CallStaticVoidMethod(env, shutdown_class, shutdown_id);
@@ -1165,13 +1126,15 @@ int bdj_process_event(BDJAVA *bdjava, unsigned ev, unsigned param)
         attach = 1;
     }
 
-    if (_get_method(env, &event_class, &event_id,
-                       "org/videolan/Libbluray", "processEvent", "(II)Z")) {
-        if ((*env)->CallStaticBooleanMethod(env, event_class, event_id, (jint)ev, (jint)param)) {
+    if (_get_method(env, &event_class, &event_id, "org/videolan/Libbluray", "processEvent", "(II)Z")) 
+    {
+        if ((*env)->CallStaticBooleanMethod(env, event_class, event_id, (jint)ev, (jint)param)) 
+        {
             result = 0;
         }
 
-        if ((*env)->ExceptionOccurred(env)) {
+        if ((*env)->ExceptionOccurred(env)) 
+        {
             (*env)->ExceptionDescribe(env);
             BD_DEBUG(DBG_BDJ | DBG_CRIT, "bdj_process_event(%u,%u) failed (uncaught exception)\n", ev, param);
             (*env)->ExceptionClear(env);
@@ -1180,7 +1143,8 @@ int bdj_process_event(BDJAVA *bdjava, unsigned ev, unsigned param)
         (*env)->DeleteLocalRef(env, event_class);
     }
 
-    if (attach) {
+    if (attach) 
+    {
         (*bdjava->jvm)->DetachCurrentThread(bdjava->jvm);
     }
 

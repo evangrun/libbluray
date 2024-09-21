@@ -19,7 +19,8 @@
 
 package org.dvb.event;
 
-import java.awt.BDJHelper;
+import java.awtutil.BDJHelper;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 

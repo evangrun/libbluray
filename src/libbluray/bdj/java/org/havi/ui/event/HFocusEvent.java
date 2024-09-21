@@ -19,6 +19,8 @@
 
 package org.havi.ui.event;
 
+import java.awt.event.*;
+
 public class HFocusEvent extends java.awt.event.FocusEvent {
     public static final int HFOCUS_FIRST = HTextEvent.TEXT_LAST + 1;
     public static final int FOCUS_TRANSFER = HFOCUS_FIRST;

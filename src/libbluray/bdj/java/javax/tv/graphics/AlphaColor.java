@@ -19,7 +19,7 @@
 
 package javax.tv.graphics;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class AlphaColor extends Color {
     public AlphaColor(float r, float g, float b, float a) {

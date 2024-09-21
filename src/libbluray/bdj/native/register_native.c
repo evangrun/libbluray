@@ -36,8 +36,8 @@ static int _register_methods(JNIEnv *env, const char *class_name,
     (*env)->ExceptionClear(env);
 
     cls = (*env)->FindClass(env, class_name);
-
-    if (!cls) {
+    if (!cls) 
+    {
         BD_DEBUG(DBG_BDJ | DBG_CRIT, "Failed to locate class %s\n", class_name);
         (*env)->ExceptionDescribe(env);
         (*env)->ExceptionClear(env);
@@ -46,7 +46,8 @@ static int _register_methods(JNIEnv *env, const char *class_name,
 
     error =  (*env)->RegisterNatives(env, cls, methods, methods_count);
 
-    if ((*env)->ExceptionOccurred(env)) {
+    if ((*env)->ExceptionOccurred(env)) 
+    {
         BD_DEBUG(DBG_BDJ | DBG_CRIT, "Failed to register native methods for class %s\n", class_name);
         (*env)->ExceptionDescribe(env);
         (*env)->ExceptionClear(env);
@@ -103,23 +104,27 @@ int bdj_register_native_methods(JNIEnv *env)
     extern const int Java_java_awt_BDGraphics_methods_count;
     extern const int Java_java_awt_BDFontMetrics_methods_count;
 
+    //  register the logger
     int result = _register_methods(env, "org/videolan/Logger",
         Java_org_videolan_Logger_methods,
         Java_org_videolan_Logger_methods_count);
 
-    result *= _register_methods(env, "org/videolan/Libbluray",
-        Java_org_videolan_Libbluray_methods,
-        Java_org_videolan_Libbluray_methods_count);
-
-      /* BDFontMetrics must be registered before BDGraphics */
+    // BDFontMetrics must be registered before BDGraphics 
     result *= _register_methods(env, "java/awt/BDFontMetrics",
         Java_java_awt_BDFontMetrics_methods,
         Java_java_awt_BDFontMetrics_methods_count);
 
+    //  register graphics
     result *= _register_methods(env, "java/awt/BDGraphicsBase",
         Java_java_awt_BDGraphics_methods,
         Java_java_awt_BDGraphics_methods_count);
 
+    //  and finally
+    result *= _register_methods(env, "org/videolan/Libbluray",
+        Java_org_videolan_Libbluray_methods,
+        Java_org_videolan_Libbluray_methods_count);
+
+    //  done
     return result;
 }
 

@@ -54,7 +54,7 @@ public class Handler extends BDHandler {
         controls[2] = new PanningControlImpl(this);
     }
 
-    public void setSource(DataSource source) throws IOException, IncompatibleSourceException {
+    public void setSource(DataSource source) throws IncompatibleSourceException {
         this.source = new org.videolan.media.protocol.dripfeed.DataSource(source.getLocator());
         if (source.getLocator() == null)
             throw new IncompatibleSourceException();
