@@ -20,7 +20,16 @@
 package javax.awt;
 
 import java.awt.*;
-import org.awt.NullGraphics;
+import java.awt.Dialog.ModalExclusionType;
+import java.awt.Dialog.ModalityType;
+import java.awt.Font;
+import java.awt.datatransfer.Clipboard;
+import java.awt.font.TextAttribute;
+import java.awt.im.InputMethodHighlight;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.awt.NullGraphics;
 
 public class BDToolkit extends BDToolkitBase {
 
@@ -39,4 +48,40 @@ public class BDToolkit extends BDToolkitBase {
         if (window instanceof BDRootWindow)
             ((BDRootWindow)window).sync();
     }
+
+	@Override
+	public FontMetrics getFontMetrics(Font font) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PrintJob getPrintJob(Frame frame, String jobtitle, Properties props) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Clipboard getSystemClipboard() throws HeadlessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isModalityTypeSupported(ModalityType modalityType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isModalExclusionTypeSupported(ModalExclusionType modalExclusionType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Map<TextAttribute, ?> mapInputMethodHighlight(InputMethodHighlight highlight) throws HeadlessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

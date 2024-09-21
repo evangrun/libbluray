@@ -24,10 +24,14 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.ConstrainableGraphics;
+import java.awt.Composite;
+import java.awt.FontMetrics;
+
+import javax.awt.ConstrainableGraphics;
 import java.awt.Graphics;
 import java.lang.reflect.Field;
 import java.text.AttributedCharacterIterator;

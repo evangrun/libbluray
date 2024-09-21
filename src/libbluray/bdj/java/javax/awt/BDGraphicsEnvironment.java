@@ -54,7 +54,7 @@ public class BDGraphicsEnvironment extends GraphicsEnvironment {
     }
 
     /* not in J2ME */
-    public Font[] getAllFonts() {
+    public java.awt.Font[] getAllFonts() {
         Logger.unimplemented("BDGraphicsEnvironment", "getAllFonts");
         return null;
     }

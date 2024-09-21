@@ -3,7 +3,7 @@ package javax.awt;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.peer.ButtonPeer;
+import javax.awt.peer.ButtonPeer;
 import java.beans.BeanProperty;
 import java.io.IOException;
 import java.io.ObjectInputStream;

@@ -23,7 +23,7 @@ package javax.awt;
 import java.awt.EventQueue;
 import java.awt.event.KeyEvent;
 import java.awt.Component;
-import java.awt.EventDispatchThread;
+import javax.awt.EventDispatchThread;
 
 import org.videolan.Logger;
 

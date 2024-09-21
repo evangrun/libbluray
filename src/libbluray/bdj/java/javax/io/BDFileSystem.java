@@ -94,7 +94,7 @@ public abstract class BDFileSystem extends FileSystem {
 
     /* org.videolan.CacheDir uses this function to clean up cache directory */
     public static String[] nativeList(File f) {
-        return ((BDFileSystem) nativeFileSystem).list(f);
+        return nativeFileSystem.list(f);
     }
 
     /* org.videolan.VFSCache uses this function to check if file has been cached */
@@ -391,7 +391,7 @@ public abstract class BDFileSystem extends FileSystem {
 
     public String[] list(File f) {
         if (!booted)
-            return ((BDFileSystem) fs).list(f);
+            return fs.list(f);
 
         String path = f.getPath();
         String root = System.getProperty("bluray.vfs.root");

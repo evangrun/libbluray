@@ -162,8 +162,8 @@ object to draw onto without drawing onto the screen.
         * @see       java.awt.Graphics#setFont
         * @since     JDK1.0
         */
-    public Font getFont() {
-        return font;
+    public java.awt.Font getFont() {
+        return null;
     }
 
     /**

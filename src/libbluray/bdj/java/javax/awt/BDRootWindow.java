@@ -45,18 +45,18 @@ public class BDRootWindow extends Frame {
         return defaultFont;
     }
 
-    public void setDefaultFont(String fontId) {
-        if (fontId == null || fontId.equals("*****")) {
+    public void setDefaultFont(Font defaultFont2) {
+        if (defaultFont2 == null || defaultFont2.equals("*****")) {
             defaultFont = null;
         } else {
             try {
-                defaultFont = (new org.dvb.ui.FontFactory()).createFont(fontId);
+                defaultFont = (new org.dvb.ui.FontFactory()).createFont(defaultFont2);
             } catch (Exception ex) {
-                logger.error("Failed setting default font " + fontId + ".otf: " + ex);
+                logger.error("Failed setting default font " + defaultFont2 + ".otf: " + ex);
             }
         }
-        logger.info("setting default font to " + fontId + ".otf (" + defaultFont + ")");
-        setFont(defaultFont);
+        logger.info("setting default font to " + defaultFont2 + ".otf (" + defaultFont + ")");
+        setDefaultFont(defaultFont);
     }
 
 

@@ -20,9 +20,29 @@
 package javax.awt;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.ColorModel;
 
 class BDGraphicsConfiguration extends BDGraphicsConfigurationBase {
     BDGraphicsConfiguration(BDGraphicsDevice device) {
         super(device);
     }
+
+	@Override
+	public ColorModel getColorModel(int transparency) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AffineTransform getDefaultTransform() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AffineTransform getNormalizingTransform() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

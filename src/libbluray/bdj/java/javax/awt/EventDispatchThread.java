@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import javax.xml.stream.EventFilter;
 
-import java.awt.EventFilter.FilterAction;
+import javax.awt.EventFilter.FilterAction;
 
 import sun.util.logging.PlatformLogger;
 
