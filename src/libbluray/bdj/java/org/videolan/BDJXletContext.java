@@ -21,7 +21,6 @@ package org.videolan;
 
 import java.awt.Container;		
 import java.awt.EventQueue;
-import java.awtutil.EventDispatchThread;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,7 +31,8 @@ import java.util.HashMap;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import java.awtutil.BDJHelper;
+import javax.awt.EventDispatchThread;
+import javax.awt.BDJHelper;
 
 import javax.microedition.xlet.UnavailableContainerException;
 
@@ -267,7 +267,7 @@ public class BDJXletContext implements javax.tv.xlet.XletContext, javax.microedi
     protected int numEventQueueThreads() {
         int cnt = 0;
         if (eventQueue != null) {
-            Thread t = java.awtutil.BDJHelper.getEventDispatchThread(eventQueue);
+            Thread t = javax.awt.BDJHelper.getEventDispatchThread(eventQueue);
             if (t != null && t.isAlive()) {
                 cnt++;
             }
@@ -506,7 +506,7 @@ public class BDJXletContext implements javax.tv.xlet.XletContext, javax.microedi
         EventQueue eq = eventQueue;
         eventQueue = null;
         if (eq != null) {
-            java.awtutil.BDJHelper.stopEventQueue(eq);
+            javax.awt.BDJHelper.stopEventQueue(eq);
         }
 
         threadGroup.stopAll(1000);

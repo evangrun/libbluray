@@ -28,7 +28,7 @@ import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
 
-import java.awtutil.BDWindowGraphics;
+import javax.awt.BDWindowGraphics;
 
 import java.lang.InterruptedException;
 import java.lang.Thread;
@@ -218,7 +218,7 @@ public class ImageFrameAccurateAnimation extends FrameAccurateAnimation
                         return;
                     }
                 }
-
+ 
                 // next image index
                 int position = faa.position + increment;
                 if (position >= faa.images.length) {

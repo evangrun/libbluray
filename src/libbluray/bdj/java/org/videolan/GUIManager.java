@@ -21,7 +21,7 @@ package org.videolan;
 
 import java.awt.Component;
 
-import java.awtutil.BDRootWindow;
+import javax.awt.BDRootWindow;
 
 import org.havi.ui.HScene;
 

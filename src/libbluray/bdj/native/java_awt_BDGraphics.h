@@ -7,17 +7,17 @@
 #define JNIEXPORT static
 #endif
 
-#ifndef _Included_java_awt_BDGraphics
-#define _Included_java_awt_BDGraphics
+#ifndef _Included_javax_awt_BDGraphics
+#define _Included_javax_awt_BDGraphics
 #ifdef __cplusplus
 extern "C" {
 #endif
 /*
- * Class:     java_awt_BDGraphics
+ * Class:     javax_awt_BDGraphics
  * Method:    drawStringN
  * Signature: (JLjava/lang/String;III)V
  */
-JNIEXPORT void JNICALL Java_java_awt_BDGraphics_drawStringN
+JNIEXPORT void JNICALL Java_javax_awt_BDGraphics_drawStringN
   (JNIEnv *, jobject, jlong, jstring, jint, jint, jint);
 
 #ifdef __cplusplus

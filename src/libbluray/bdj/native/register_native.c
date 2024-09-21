@@ -97,12 +97,12 @@ int bdj_register_native_methods(JNIEnv *env)
 {
     extern const JNINativeMethod Java_org_videolan_Logger_methods[];
     extern const JNINativeMethod Java_org_videolan_Libbluray_methods[];
-    extern const JNINativeMethod Java_java_awt_BDGraphics_methods[];
-    extern const JNINativeMethod Java_java_awt_BDFontMetrics_methods[];
+    extern const JNINativeMethod Java_javax_awt_BDGraphics_methods[];
+    extern const JNINativeMethod Java_javax_awt_BDFontMetrics_methods[];
     extern const int Java_org_videolan_Logger_methods_count;
     extern const int Java_org_videolan_Libbluray_methods_count;
-    extern const int Java_java_awt_BDGraphics_methods_count;
-    extern const int Java_java_awt_BDFontMetrics_methods_count;
+    extern const int Java_javax_awt_BDGraphics_methods_count;
+    extern const int Java_javax_awt_BDFontMetrics_methods_count;
 
     //  register the logger
     int result = _register_methods(env, "org/videolan/Logger",
@@ -110,17 +110,17 @@ int bdj_register_native_methods(JNIEnv *env)
         Java_org_videolan_Logger_methods_count);
 
     // BDFontMetrics must be registered before BDGraphics 
-    result *= _register_methods(env, "java/awt/BDFontMetrics",
-        Java_java_awt_BDFontMetrics_methods,
-        Java_java_awt_BDFontMetrics_methods_count);
+    result &= _register_methods(env, "javax/awt/BDFontMetrics",
+        Java_javax_awt_BDFontMetrics_methods,
+        Java_javax_awt_BDFontMetrics_methods_count);
 
     //  register graphics
-    result *= _register_methods(env, "java/awt/BDGraphicsBase",
-        Java_java_awt_BDGraphics_methods,
-        Java_java_awt_BDGraphics_methods_count);
+    result &= _register_methods(env, "javax/awt/BDGraphicsBase",
+        Java_javax_awt_BDGraphics_methods,
+        Java_javax_awt_BDGraphics_methods_count);
 
     //  and finally
-    result *= _register_methods(env, "org/videolan/Libbluray",
+    result &= _register_methods(env, "org/videolan/Libbluray",
         Java_org_videolan_Libbluray_methods,
         Java_org_videolan_Libbluray_methods_count);
 
@@ -130,8 +130,8 @@ int bdj_register_native_methods(JNIEnv *env)
 
 void bdj_unregister_native_methods(JNIEnv *env)
 {
-    _unregister_methods(env, "java/awt/BDGraphicsBase");
-    _unregister_methods(env, "java/awt/BDFontMetrics");
+    _unregister_methods(env, "javax/awt/BDGraphicsBase");
+    _unregister_methods(env, "javax/awt/BDFontMetrics");
     _unregister_methods(env, "org/videolan/Libbluray");
     _unregister_methods(env, "org/videolan/Logger");
 }

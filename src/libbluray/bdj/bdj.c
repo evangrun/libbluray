@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library. If not, see
  * <http://www.gnu.org/licenses/>.
- */
+ */ 
 
 #if HAVE_CONFIG_H
 #include "config.h"
@@ -666,8 +666,11 @@ static int _bdj_init(JNIEnv *env, struct bluray *bd, const char *disc_root, cons
                      "org/videolan/Libbluray", "init",
                      "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")) 
     {
+        BD_DEBUG(DBG_BDJ | DBG_CRIT, "Failed to find init() method in org.videolan.Libbluray.\n");
         return 0;
-    }
+    } 
+
+    BD_DEBUG(DBG_BDJ, "Setting disc ID and calling init().\n");
 
     //  call method for disk id
     const char *disc_id = (bdj_disc_id && bdj_disc_id[0]) ? bdj_disc_id : "00000000000000000000000000000000";
@@ -808,7 +811,7 @@ static const char * const java_base_exports[] = {
         "com.aacsla.bluray.online",
         "com.aacsla.bluray.mc",
         "com.aacsla.bluray.mt",
-//        "org.videolan.backdoor", /* entry for injected Xlet / runtime fixes */
+        "org.videolan.backdoor", /* entry for injected Xlet / runtime fixes */
 };
 static const size_t num_java_base_exports = sizeof(java_base_exports) / sizeof(java_base_exports[0]);
 
@@ -828,7 +831,7 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
     {
         BD_DEBUG(DBG_BDJ | DBG_CRIT, "Couldn't find symbol JNI_CreateJavaVM.\n");
         return 0;
-    } 
+    }  
 
     //  check for environment
     java_9 = !!dl_dlsym(jvm_lib, "JVM_DefineModule");
@@ -847,25 +850,27 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
     option[n++].optionString = str_dup("--add-exports=java.base/org.dvb.ui=java.desktop");
     // org.videolan.FontIndex -> java.xml. 
     option[n++].optionString = str_dup("--add-reads=java.base=java.xml");
-
-//    option[n++].optionString = str_dup   ("-Dawt.toolkit=java.awt.BDToolkit");
-//    option[n++].optionString = str_dup   ("-Djava.awt.graphicsenv=java.awt.BDGraphicsEnvironment");
-//    option[n++].optionString = str_dup   ("-Djava.awt.headless=false");
-//    option[n++].optionString = str_dup   ("-Xms256M");
-//    option[n++].optionString = str_dup   ("-Xmx256M");
-//    option[n++].optionString = str_dup   ("-Xss2048k");
-    //  option[n++].optionString = str_dup   ("-Djava.class.path=D:/Program Files/Java/jdk1.8.0_191/lib/");
-
-    /*
-    option[n++].optionString = str_printf("--patch-module=java.base=%s", cfg->classpath[0]);
-    option[n++].optionString = str_printf("--patch-module=java.desktop=%s", cfg->classpath[1]);
-
-    // Fix module graph 
+    //  add that we will use the java.desktop packages
     option[n++].optionString = str_dup("--add-reads=java.base=java.desktop");
+    //  patch java base for our code 
+    option[n++].optionString = str_printf("--patch-module=java.base=%s", cfg->classpath);
+    //  set the graphics environment to us
+    option[n++].optionString = str_dup("-Djava.awt.graphicsenv=java.awt.BDGraphicsEnvironment");
+    option[n++].optionString = str_dup("-Djava.awt.headless=false");
+
     // org.videolan.IxcRegistryImpl -> java.rmi.Remote 
     option[n++].optionString = str_dup("--add-reads=java.base=java.rmi");
     // org.videolan.FontIndex -> java.xml. 
     option[n++].optionString = str_dup("--add-reads=java.base=java.xml");
+
+//    option[n++].optionString = str_dup   ("-Dawt.toolkit=java.awt.BDToolkit");
+
+
+//    option[n++].optionString = str_dup   ("-Xms256M");
+//    option[n++].optionString = str_dup   ("-Xmx256M");
+//    option[n++].optionString = str_dup   ("-Xss2048k");
+
+    /*
     // org.havi.ui.HBackgroundImage needs to access sun.awt.image.FileImageSource 
     option[n++].optionString = str_dup("--add-exports=java.desktop/sun.awt.image=java.base");
     */

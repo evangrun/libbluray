@@ -260,7 +260,7 @@ static char *_fontconfig_resolve_font(FcConfig *lib, const char *font_family, ji
  */
 
 JNIEXPORT void JNICALL
-Java_java_awt_BDFontMetrics_unloadFontConfigN(JNIEnv * env, jclass cls)
+Java_javax_awt_BDFontMetrics_unloadFontConfigN(JNIEnv * env, jclass cls)
 {
 #ifdef HAVE_FONTCONFIG
     _unload_fc_lib(env, cls);
@@ -268,7 +268,7 @@ Java_java_awt_BDFontMetrics_unloadFontConfigN(JNIEnv * env, jclass cls)
 }
 
 JNIEXPORT jstring JNICALL
-Java_java_awt_BDFontMetrics_resolveFontN(JNIEnv * env, jclass cls, jstring jfont_family, jint font_style)
+Java_javax_awt_BDFontMetrics_resolveFontN(JNIEnv * env, jclass cls, jstring jfont_family, jint font_style)
 {
     const char *font_family = (*env)->GetStringUTFChars(env, jfont_family, NULL);
     char       *filename = NULL;
@@ -299,7 +299,7 @@ Java_java_awt_BDFontMetrics_resolveFontN(JNIEnv * env, jclass cls, jstring jfont
  */
 
 JNIEXPORT jlong JNICALL
-Java_java_awt_BDFontMetrics_initN(JNIEnv * env, jclass cls)
+Java_javax_awt_BDFontMetrics_initN(JNIEnv * env, jclass cls)
 {
 #ifdef HAVE_FT2
     FT_Library ftLib;
@@ -314,7 +314,7 @@ Java_java_awt_BDFontMetrics_initN(JNIEnv * env, jclass cls)
 }
 
 JNIEXPORT void JNICALL
-Java_java_awt_BDFontMetrics_destroyN(JNIEnv * env, jclass cls, jlong ftLib)
+Java_javax_awt_BDFontMetrics_destroyN(JNIEnv * env, jclass cls, jlong ftLib)
 {
 #ifdef HAVE_FT2
     FT_Library lib = (FT_Library)(intptr_t)ftLib;
@@ -325,12 +325,12 @@ Java_java_awt_BDFontMetrics_destroyN(JNIEnv * env, jclass cls, jlong ftLib)
 
     FT_Done_FreeType(lib);
 
-    Java_java_awt_BDFontMetrics_unloadFontConfigN(env, cls);
+    Java_javax_awt_BDFontMetrics_unloadFontConfigN(env, cls);
 #endif
 }
 
 JNIEXPORT jobjectArray JNICALL
-Java_java_awt_BDFontMetrics_getFontFamilyAndStyleN(JNIEnv * env, jclass cls, jlong ftLib, jstring fontName)
+Java_javax_awt_BDFontMetrics_getFontFamilyAndStyleN(JNIEnv * env, jclass cls, jlong ftLib, jstring fontName)
 {
     jobjectArray array = bdj_make_array(env, "java/lang/String", 2);
 
@@ -365,7 +365,7 @@ Java_java_awt_BDFontMetrics_getFontFamilyAndStyleN(JNIEnv * env, jclass cls, jlo
 }
 
 JNIEXPORT jlong JNICALL
-Java_java_awt_BDFontMetrics_loadFontN(JNIEnv * env, jobject obj, jlong ftLib, jstring fontName, jint size)
+Java_javax_awt_BDFontMetrics_loadFontN(JNIEnv * env, jobject obj, jlong ftLib, jstring fontName, jint size)
 {
 #ifdef HAVE_FT2
     const char *name;
@@ -404,7 +404,7 @@ Java_java_awt_BDFontMetrics_loadFontN(JNIEnv * env, jobject obj, jlong ftLib, js
 }
 
 JNIEXPORT void JNICALL
-Java_java_awt_BDFontMetrics_destroyFontN(JNIEnv *env, jobject obj, jlong ftFace)
+Java_javax_awt_BDFontMetrics_destroyFontN(JNIEnv *env, jobject obj, jlong ftFace)
 {
 #ifdef HAVE_FT2
     FT_Face face = (FT_Face)(intptr_t)ftFace;
@@ -418,7 +418,7 @@ Java_java_awt_BDFontMetrics_destroyFontN(JNIEnv *env, jobject obj, jlong ftFace)
 }
 
 JNIEXPORT jint JNICALL
-Java_java_awt_BDFontMetrics_charWidthN(JNIEnv * env, jobject obj, jlong ftFace, jchar c)
+Java_javax_awt_BDFontMetrics_charWidthN(JNIEnv * env, jobject obj, jlong ftFace, jchar c)
 {
 #ifdef HAVE_FT2
     FT_Face face = (FT_Face)(intptr_t)ftFace;
@@ -436,7 +436,7 @@ Java_java_awt_BDFontMetrics_charWidthN(JNIEnv * env, jobject obj, jlong ftFace, 
 }
 
 JNIEXPORT jint JNICALL
-Java_java_awt_BDFontMetrics_stringWidthN(JNIEnv * env, jobject obj, jlong ftFace, jstring string)
+Java_javax_awt_BDFontMetrics_stringWidthN(JNIEnv * env, jobject obj, jlong ftFace, jstring string)
 {
 #ifdef HAVE_FT2
     jsize length;
@@ -471,7 +471,7 @@ Java_java_awt_BDFontMetrics_stringWidthN(JNIEnv * env, jobject obj, jlong ftFace
 }
 
 JNIEXPORT jint JNICALL
-Java_java_awt_BDFontMetrics_charsWidthN(JNIEnv * env, jobject obj, jlong ftFace, jcharArray charArray,
+Java_javax_awt_BDFontMetrics_charsWidthN(JNIEnv * env, jobject obj, jlong ftFace, jcharArray charArray,
                                                 jint offset, jint length)
 {
 #ifdef HAVE_FT2
@@ -511,60 +511,60 @@ Java_java_awt_BDFontMetrics_charsWidthN(JNIEnv * env, jobject obj, jlong ftFace,
 #define VC (void*)(uintptr_t)  /* cast function pointer to void* */
 
 BD_PRIVATE CPP_EXTERN const JNINativeMethod
-Java_java_awt_BDFontMetrics_methods[] =
+Java_javax_awt_BDFontMetrics_methods[] =
 { /* AUTOMATICALLY GENERATED */
     {
         CC("initN"),
         CC("()J"),
-        VC(Java_java_awt_BDFontMetrics_initN),
+        VC(Java_javax_awt_BDFontMetrics_initN),
     },
     {
         CC("destroyN"),
         CC("(J)V"),
-        VC(Java_java_awt_BDFontMetrics_destroyN),
+        VC(Java_javax_awt_BDFontMetrics_destroyN),
     },
     {
         CC("resolveFontN"),
         CC("(Ljava/lang/String;I)Ljava/lang/String;"),
-        VC(Java_java_awt_BDFontMetrics_resolveFontN),
+        VC(Java_javax_awt_BDFontMetrics_resolveFontN),
     },
     {
         CC("unloadFontConfigN"),
         CC("()V"),
-        VC(Java_java_awt_BDFontMetrics_unloadFontConfigN),
+        VC(Java_javax_awt_BDFontMetrics_unloadFontConfigN),
     },
     {
         CC("getFontFamilyAndStyleN"),
         CC("(JLjava/lang/String;)[Ljava/lang/String;"),
-        VC(Java_java_awt_BDFontMetrics_getFontFamilyAndStyleN),
+        VC(Java_javax_awt_BDFontMetrics_getFontFamilyAndStyleN),
     },
     {
         CC("loadFontN"),
         CC("(JLjava/lang/String;I)J"),
-        VC(Java_java_awt_BDFontMetrics_loadFontN),
+        VC(Java_javax_awt_BDFontMetrics_loadFontN),
     },
     {
         CC("destroyFontN"),
         CC("(J)V"),
-        VC(Java_java_awt_BDFontMetrics_destroyFontN),
+        VC(Java_javax_awt_BDFontMetrics_destroyFontN),
     },
     {
         CC("charWidthN"),
         CC("(JC)I"),
-        VC(Java_java_awt_BDFontMetrics_charWidthN),
+        VC(Java_javax_awt_BDFontMetrics_charWidthN),
     },
     {
         CC("stringWidthN"),
         CC("(JLjava/lang/String;)I"),
-        VC(Java_java_awt_BDFontMetrics_stringWidthN),
+        VC(Java_javax_awt_BDFontMetrics_stringWidthN),
     },
     {
         CC("charsWidthN"),
         CC("(J[CII)I"),
-        VC(Java_java_awt_BDFontMetrics_charsWidthN),
+        VC(Java_javax_awt_BDFontMetrics_charsWidthN),
     },
 };
 
 BD_PRIVATE CPP_EXTERN const int
-Java_java_awt_BDFontMetrics_methods_count =
-    sizeof(Java_java_awt_BDFontMetrics_methods)/sizeof(Java_java_awt_BDFontMetrics_methods[0]);
+Java_javax_awt_BDFontMetrics_methods_count =
+    sizeof(Java_javax_awt_BDFontMetrics_methods)/sizeof(Java_javax_awt_BDFontMetrics_methods[0]);

@@ -38,7 +38,7 @@ import org.videolan.BDJXletContext;
 import org.videolan.GUIManager;
 import org.videolan.Logger;
 
-import java.awtutil.BDToolkit;
+import javax.awt.BDToolkit;
 
 
 public class HScene extends Container implements HComponentOrdering {
