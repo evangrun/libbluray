@@ -35,14 +35,9 @@ class BDFileSystemImpl extends BDFileSystem {
         super(fs);
     }
 
-    /* Different in SE */
-    public boolean checkAccess(File f, boolean write) {
-        return ((BDFileSystemImpl) fs).checkAccess(f, write);
-    }
-
-    /* Not in SE */
+      /* Not in SE */
     public boolean deleteOnExit(File f) {
-        return ((BDFileSystemImpl) fs).deleteOnExit(f);
+        return fs.deleteOnExit(f);
     }
 
 	@Override

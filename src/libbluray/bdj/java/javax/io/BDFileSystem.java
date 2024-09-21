@@ -36,8 +36,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems; 
+import java.nio.file.*;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -82,11 +81,16 @@ public abstract class BDFileSystem extends FileSystem {
             nativeFileSystem = (FileSystem)FileSystem.class
                 .getDeclaredMethod("getFileSystem",new Class[0])
                 .invoke(null, new Object[0]);
-        } catch (Exception e) {
-            try {
-                /* Just use our wrapper.  If it fails, JVM won't be booted anyway ... */
+        } 
+        catch (Exception e) 
+        {
+            try 
+            {
+                // use the native file system
                 nativeFileSystem = FileSystems.getDefault(); //DefaultFileSystem.getNativeFileSystem();
-            } catch (Throwable t) {
+            } 
+            catch (Throwable t) 
+            {
                 System.err.print("Couldn't find native filesystem: " + e);
             }
         }
@@ -94,12 +98,13 @@ public abstract class BDFileSystem extends FileSystem {
 
     /* org.videolan.CacheDir uses this function to clean up cache directory */
     public static String[] nativeList(File f) {
-        return nativeFileSystem.list(f);
+        return f.list();
     }
 
     /* org.videolan.VFSCache uses this function to check if file has been cached */
     public static boolean nativeFileExists(String path) {
-        return ((BDFileSystem) nativeFileSystem).getBooleanAttributes(new File(path)) != 0;
+    	Path pathFromFile = Paths.get(path);
+        return Files.exists(pathFromFile);
     }
 
     /*
@@ -128,14 +133,16 @@ public abstract class BDFileSystem extends FileSystem {
             filesystem.setAccessible(true);
 
             FileSystem fs = (FileSystem)filesystem.get(null);
-            if (fs instanceof BDFileSystemImpl) {
-                //System.err.print("FileSystem already wrapped");
-            } else {
-                /* Java 8: we should never end up here ... */
+            if (fs instanceof BDFileSystemImpl) 
+            {
+                System.err.print("FileSystem already wrapped");
+            }
+            else 
+            {
                 /* Java 8: remove "final" modifier from the field */
-                //Field modifiersField = Field.class.getDeclaredField("modifiers");
-                //modifiersField.setAccessible(true);
-                //modifiersField.setInt(filesystem, filesystem.getModifiers() & ~Modifier.FINAL);
+                Field modifiersField = Field.class.getDeclaredField("modifiers");
+                modifiersField.setAccessible(true);
+                modifiersField.setInt(filesystem, filesystem.getModifiers() & ~Modifier.FINAL);
                 filesystem.set(null, new BDFileSystemImpl(fs));
             }
         } catch (Exception t) {
@@ -295,12 +302,16 @@ public abstract class BDFileSystem extends FileSystem {
         return ((BDFileSystem) fs).getBooleanAttributes(new File(path));
     }
 
-    /*
-      ME: public abstract boolean checkAccess(File f, boolean write);
-      SE: public abstract boolean checkAccess(File f, int access);
-    */
+    public boolean checkAccess(File f, boolean write)
+    {
+    	if(write)
+    		return f.canWrite();
+    	else
+    		return f.canRead();
+    }
 
     public long getLastModifiedTime(File f) {
+
         return ((BDFileSystem) fs).getLastModifiedTime(f);
     }
 
@@ -391,13 +402,13 @@ public abstract class BDFileSystem extends FileSystem {
 
     public String[] list(File f) {
         if (!booted)
-            return fs.list(f);
+            return f.list();
 
         String path = f.getPath();
         String root = System.getProperty("bluray.vfs.root");
         if (root == null || !path.startsWith(root)) {
             /* not inside VFS */
-            return ((BDFileSystem) fs).list(f);
+            return f.list();
         }
 
         /* path is inside VFS */

@@ -19,7 +19,9 @@
 
 package javax.awt;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Image;
 
 import java.util.Arrays;
 import java.util.Timer;
@@ -41,22 +43,26 @@ public class BDRootWindow extends Frame {
         return dirty;
     }
 
-    public Font getDefaultFont() {
+    public java.awt.Font getDefaultFont() {
         return defaultFont;
     }
-
-    public void setDefaultFont(Font defaultFont2) {
-        if (defaultFont2 == null || defaultFont2.equals("*****")) {
+ 
+    public void setDefaultFont(String defaultFontstring) {
+        if (defaultFontstring == null || defaultFontstring.equals("*****")) {
             defaultFont = null;
-        } else {
-            try {
-                defaultFont = (new org.dvb.ui.FontFactory()).createFont(defaultFont2);
-            } catch (Exception ex) {
-                logger.error("Failed setting default font " + defaultFont2 + ".otf: " + ex);
-            }
+        } 
+        else 
+        {
+            try 
+            {
+                defaultFont = (new org.dvb.ui.FontFactory()).createFont(defaultFontstring);
+            } 
+            catch (Exception ex) 
+            {
+                logger.error("Failed setting default font " + defaultFontstring + ".otf: " + ex);
+            } 
         }
-        logger.info("setting default font to " + defaultFont2 + ".otf (" + defaultFont + ")");
-        setDefaultFont(defaultFont);
+        logger.info("setting default font to " + defaultFontstring + ".otf (" + defaultFont + ")");
     }
 
 
@@ -227,7 +233,7 @@ public class BDRootWindow extends Frame {
     private transient Timer timer = new Timer();
     private transient TimerTask timerTask = null;
     private boolean overlay_open = false;
-    private Font defaultFont = null;
+    private java.awt.Font defaultFont = null;
 
     private static final Logger logger = Logger.getLogger(BDRootWindow.class.getName());
 
