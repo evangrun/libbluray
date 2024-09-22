@@ -21,24 +21,64 @@
 package javax.awt;
 
 import java.awt.EventQueue;
+import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
+import java.awt.event.InvocationEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.Component;
-import javax.awt.EventDispatchThread;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.videolan.Logger;
 
 public class BDJHelper {
 
-    public static EventDispatchThread getEventDispatchThread(EventQueue eq) {
+	public static Object genericInvokeMethod(Object obj, String methodName, Object... params) {
+        int paramCount = params.length;
+        Method method;
+        Object requiredObj = null;
+        Class<?>[] classArray = new Class<?>[paramCount];
+        for (int i = 0; i < paramCount; i++) {
+            classArray[i] = params[i].getClass();
+        }
+        try {
+            method = obj.getClass().getDeclaredMethod(methodName, classArray);
+            method.setAccessible(true);
+            requiredObj = method.invoke(obj, params);
+        } 
+        catch (NoSuchMethodException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } 
+        catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } 
+        catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        return requiredObj;
+    }
+	
+	//	use reflection since we are in a different package
+	//	this is reasonably dirty, but well, you are decoding blurays when you are not supposed to
+    public static Object getEventDispatchThread(EventQueue eq) {
         if (eq != null) {
-            return eq.getDispatchThread();
+        	return genericInvokeMethod(eq, "getDispatchThread");
         }
         return null;
     }
 
+	//	use reflection since we are in a different package
+	//	this is reasonably dirty, but well, you are decoding blurays when you are not supposed to
     public static void stopEventQueue(EventQueue eq) {
-        EventDispatchThread t = eq.getDispatchThread();
-        if (t != null && t.isAlive()) {
+    	Object t = getEventDispatchThread(eq);
+        if (t != null && (Boolean)genericInvokeMethod(t, "isAlive")) {
 
             final long DISPOSAL_TIMEOUT = 5000;
             final Object notificationLock = new Object();
@@ -56,18 +96,16 @@ public class BDJHelper {
                 }
             }
 
-            t.stopDispatching();
-            if (t.isAlive()) {
-                t.interrupt();
+            genericInvokeMethod(t, "stopDispatching");
+            if ((Boolean)genericInvokeMethod(t, "isAlive")) {
+            	genericInvokeMethod(t, "interrupt");
             }
-
-            try {
-                t.join(1000);
-            } catch (InterruptedException e) {
-            }
-            if (t.isAlive()) {
+            //	wait 1 sec, then try join
+        	genericInvokeMethod(t, "join", 1000);
+        	//	check again
+        	if ((Boolean)genericInvokeMethod(t, "isAlive")) {
                 logger.error("stopEventQueue() failed for " + t);
-                org.videolan.PortingHelper.stopThread(t);
+                //org.videolan.PortingHelper.stopThread(t);
             }
         }
     }

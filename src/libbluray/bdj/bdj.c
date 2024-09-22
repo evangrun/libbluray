@@ -1118,12 +1118,16 @@ int bdj_process_event(BDJAVA *bdjava, unsigned ev, unsigned param)
         return -1;
     }
 
-    if (ev > BDJ_EVENT_LAST) {
+    if (ev > BDJ_EVENT_LAST) 
+    {
         BD_DEBUG(DBG_BDJ | DBG_CRIT, "bdj_process_event(%d,%d): unknown event\n", ev, param);
     }
     // Disable too verbose logging (PTS)
-    else if (ev != BDJ_EVENT_PTS) {
-        BD_DEBUG(DBG_BDJ, "bdj_process_event(%s,%d)\n", ev_name[ev], param);
+    else 
+    if (ev != BDJ_EVENT_PTS) 
+    {
+    //  @@ check crash when events are outside
+        //BD_DEBUG(DBG_BDJ, "bdj_process_event(%s,%d)\n", ev_name[ev], param);
     }
 
     if ((*bdjava->jvm)->GetEnv(bdjava->jvm, (void**)&env, JNI_VERSION_1_4) != JNI_OK) {

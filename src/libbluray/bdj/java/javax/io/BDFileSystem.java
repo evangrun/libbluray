@@ -38,8 +38,10 @@ import java.lang.reflect.Modifier;
 
 import java.nio.file.*;
 
-import java.security.AccessController;
 import java.security.PrivilegedAction;
+
+//	replacement
+import javax.io.DefaultFileSystem;
 
 import org.videolan.BDJLoader;
 import org.videolan.BDJXletContext;
@@ -86,8 +88,8 @@ public abstract class BDFileSystem extends FileSystem {
         {
             try 
             {
-                // use the native file system
-                nativeFileSystem = FileSystems.getDefault(); //DefaultFileSystem.getNativeFileSystem();
+                // use the native file system, not the replacement class
+                nativeFileSystem = FileSystems.getDefault();
             } 
             catch (Throwable t) 
             {
@@ -116,14 +118,6 @@ public abstract class BDFileSystem extends FileSystem {
     public static void init(final Class c) {
 
         setBooted();
-
-        AccessController.doPrivileged(
-            new PrivilegedAction() {
-                public Object run() {
-                    init0(c);
-                    return null;
-                }
-            });
     }
 
     private static void init0(Class c) {
@@ -184,8 +178,8 @@ public abstract class BDFileSystem extends FileSystem {
         return fs.getSeparator();
     }
 
-    public char getPathSeparator() {
-        return ((BDFileSystem) fs).getPathSeparator();
+    public String getPathSeparator() {
+        return FileSystems.getDefault().getSeparator();
     }
 
     public String normalize(String pathname) {
