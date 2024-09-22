@@ -40,9 +40,6 @@ import java.nio.file.*;
 
 import java.security.PrivilegedAction;
 
-//	replacement
-import javax.io.DefaultFileSystem;
-
 import org.videolan.BDJLoader;
 import org.videolan.BDJXletContext;
 import org.videolan.Logger;

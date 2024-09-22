@@ -40,8 +40,7 @@ public class NullComponent extends Component {
      * returns true
      * @see java.awt.GraphicsEnvironment#isHeadless
      */
-    public NullComponent() throws HeadlessException {
-        return null;
+    public NullComponent() throws HeadlessException {        
     }
 
     /**

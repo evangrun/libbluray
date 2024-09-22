@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import javax.awt.EventDispatchThread;
 import javax.awt.BDJHelper;
 
 import javax.microedition.xlet.UnavailableContainerException;
@@ -267,8 +266,8 @@ public class BDJXletContext implements javax.tv.xlet.XletContext, javax.microedi
     protected int numEventQueueThreads() {
         int cnt = 0;
         if (eventQueue != null) {
-            Thread t = javax.awt.BDJHelper.getEventDispatchThread(eventQueue);
-            if (t != null && t.isAlive()) {
+            Object t = javax.awt.BDJHelper.getEventDispatchThread(eventQueue);
+            if (t != null && javax.awt.BDJHelper.isThreadAlive(t)) {
                 cnt++;
             }
         }

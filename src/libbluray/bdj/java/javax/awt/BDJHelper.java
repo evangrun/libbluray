@@ -67,7 +67,7 @@ public class BDJHelper {
 	
 	//	use reflection since we are in a different package
 	//	this is reasonably dirty, but well, you are decoding blurays when you are not supposed to
-    public static Object getEventDispatchThread(EventQueue eq) {
+	public static Object getEventDispatchThread(EventQueue eq) {
         if (eq != null) {
         	return genericInvokeMethod(eq, "getDispatchThread");
         }
@@ -77,7 +77,8 @@ public class BDJHelper {
 	//	use reflection since we are in a different package
 	//	this is reasonably dirty, but well, you are decoding blurays when you are not supposed to
     public static void stopEventQueue(EventQueue eq) {
-    	Object t = getEventDispatchThread(eq);
+      
+        Object t = getEventDispatchThread(eq);
         if (t != null && (Boolean)genericInvokeMethod(t, "isAlive")) {
 
             final long DISPOSAL_TIMEOUT = 5000;
@@ -110,6 +111,13 @@ public class BDJHelper {
         }
     }
 
+	public static Boolean isThreadAlive(Object t) {
+        if (t != null) {
+        	return (Boolean)genericInvokeMethod(t, "isAlive");
+        }
+        return false;
+    }
+
     /*
      * Mouse events
      */
@@ -137,7 +145,8 @@ public class BDJHelper {
     }
 
     private static boolean postMouseEventImpl(int id, int button) {
-        Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getGlobalFocusOwner();
+    	java.awt.KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        Component focusOwner = (Component)genericInvokeMethod(mgr, "getGlobalFocusOwner");
         if (focusOwner != null) {
             EventQueue eq = BDToolkit.getEventQueue(focusOwner);
             if (eq != null) {
@@ -158,9 +167,12 @@ public class BDJHelper {
      * Key events
      */
 
-    public static boolean postKeyEvent(int id, int modifiers, int keyCode) {
-        Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getGlobalFocusOwner();
-        if (focusOwner != null) {
+    public static boolean postKeyEvent(int id, int modifiers, int keyCode) 
+    {
+    	java.awt.KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        Component focusOwner = (Component)genericInvokeMethod(mgr, "getGlobalFocusOwner");
+        if (focusOwner != null) 
+        {
             long when = System.currentTimeMillis();
             KeyEvent event;
             try {

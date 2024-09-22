@@ -19,7 +19,8 @@
 
 package javax.awt;
 
-import java.awt.KeyboardFocusManager;
+import java.awt.KeyboardFocusManager;	
+
 import java.awt.peer.KeyboardFocusManagerPeer;
 
 public abstract interface KeyboardFocusManagerPeerProvider {
