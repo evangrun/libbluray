@@ -20,7 +20,7 @@
 
 package org.havi.ui;
 
-import java.awt.Dimension;
+import java.awt.Dimension;	
 
 import javax.tv.xlet.XletContext;
 
@@ -28,6 +28,7 @@ import org.davic.resources.ResourceClient;
 import org.davic.resources.ResourceProxy;
 import org.davic.resources.ResourceServer;
 import org.davic.resources.ResourceStatusListener;
+
 import org.havi.ui.event.HScreenConfigurationEvent;
 import org.havi.ui.event.HScreenConfigurationListener;
 import org.havi.ui.event.HScreenDeviceReleasedEvent;

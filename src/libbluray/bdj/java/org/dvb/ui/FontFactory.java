@@ -53,6 +53,8 @@ public class FontFactory {
     private static void readDiscFonts() throws FontFormatException, IOException {
         synchronized (fontsLock) {
 
+            org.videolan.Logger.unimplemented("readDiscFonts", "readDiscFonts()");
+
         if (fonts != null)
             return;
 

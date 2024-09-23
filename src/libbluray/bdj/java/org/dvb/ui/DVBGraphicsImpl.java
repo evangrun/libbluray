@@ -19,7 +19,7 @@
 
 package org.dvb.ui;
 
-import java.awt.AlphaComposite;	
+import java.awt.AlphaComposite;		
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
@@ -52,6 +52,7 @@ public class DVBGraphicsImpl extends DVBGraphics {
 
     protected DVBGraphicsImpl(Graphics2D gfx)
     {
+        org.videolan.Logger.unimplemented("DVBGraphicsImpl", "Graphics2D()");
         this.gfx = gfx;
     }
 

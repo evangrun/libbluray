@@ -206,11 +206,14 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    //  normal
     bd_set_player_setting    (bd, BLURAY_PLAYER_SETTING_PARENTAL,     99);
     bd_set_player_setting_str(bd, BLURAY_PLAYER_SETTING_AUDIO_LANG,   "eng");
     bd_set_player_setting_str(bd, BLURAY_PLAYER_SETTING_PG_LANG,      "eng");
     bd_set_player_setting_str(bd, BLURAY_PLAYER_SETTING_MENU_LANG,    "eng");
     bd_set_player_setting_str(bd, BLURAY_PLAYER_SETTING_COUNTRY_CODE, NULL);
+    //  bdj
+    bd_set_player_setting(bd, BLURAY_PLAYER_SETTING_PERSISTENT_STORAGE, 0);
 
     bd_register_overlay_proc(bd, bd, _overlay_cb);
     bd_register_argb_overlay_proc(bd, bd, _argb_overlay_cb, NULL);

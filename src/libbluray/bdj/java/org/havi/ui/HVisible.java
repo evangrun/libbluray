@@ -53,11 +53,13 @@ public class HVisible extends HComponent implements HState {
     }
 
     public void paint(Graphics g) {
+        org.videolan.Logger.unimplemented("HVisible", "paint()");
         if (hLook != null)
             hLook.showLook(g, this, InteractionState);
     }
 
     public void update(Graphics g) {
+        org.videolan.Logger.unimplemented("HVisible", "update()");
         g.setColor(getBackground());
         paint(g);
     }

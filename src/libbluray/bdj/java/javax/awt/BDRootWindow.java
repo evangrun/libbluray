@@ -133,6 +133,7 @@ public class BDRootWindow extends Frame {
 
     public void sync() 
     {
+		org.videolan.Logger.unimplemented("BDRootWindow", "sync()");
         synchronized (this) 
         {
             if (timerTask != null) {
@@ -151,8 +152,8 @@ public class BDRootWindow extends Frame {
                 return;
             }
 
+            //	check if we had graphics
             Area a = dirty.getBoundsAndClear();
-
             if (!a.isEmpty()) 
             {
                 if (!overlay_open) {
@@ -202,12 +203,18 @@ public class BDRootWindow extends Frame {
         }
     }
 
+    //	the window is visible, so start painting
     public void setVisible(boolean visible) 
     {
+		org.videolan.Logger.unimplemented("BDRootWindow", "setVisible()");
         super.setVisible(visible);
-        if (!visible) 
+        if (visible == false) 
         {
             close();
+        }
+        else
+        {
+        	sync();
         }
     }
 

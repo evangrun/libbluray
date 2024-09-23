@@ -846,16 +846,16 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
 
     //  patch java base for our code 
     option[n++].optionString = str_printf("--patch-module=java.base=%s", cfg->classpath);
+    //  add that we will use the java.desktop packages
+    option[n++].optionString = str_dup("--add-reads=java.base=java.desktop");
+    //  we run with graphics
+    option[n++].optionString = str_dup("-Djava.awt.headless=false");
     // AWT needs to access logger and Xlet context 
     option[n++].optionString = str_dup("--add-opens=java.base/org.videolan=java.desktop");
     // AWT needs to acess DVBGraphics 
     option[n++].optionString = str_dup("--add-exports=java.base/org.dvb.ui=java.desktop");
-    //  add that we will use the java.desktop packages
-    option[n++].optionString = str_dup("--add-reads=java.base=java.desktop");
     //  set the graphics environment to us
     option[n++].optionString = str_dup("-Djava.awt.graphicsenv=java.awt.BDGraphicsEnvironment");
-    //  we run with graphics
-    option[n++].optionString = str_dup("-Djava.awt.headless=false");
     //  set the toolkit to use (our runtime environment)
     option[n++].optionString = str_dup("-Dawt.toolkit=java.awt.BDToolkit");
     // org.videolan.IxcRegistryImpl -> java.rmi.Remote 
@@ -873,9 +873,6 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
 //    option[n++].optionString = str_dup   ("-Xmx256M");
     //  set the maximum stack
 //    option[n++].optionString = str_dup   ("-Xss2048k");
-
-    /*
-    */
 
     // Export BluRay packages to Xlets 
     for (size_t idx = 0; idx < num_java_base_exports; idx++) {

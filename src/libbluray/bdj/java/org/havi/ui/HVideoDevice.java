@@ -20,11 +20,12 @@
 
 package org.havi.ui;
 
-import org.blurayx.s3d.ui.HVideoConfigTemplateS3D;
+import org.blurayx.s3d.ui.HVideoConfigTemplateS3D;	
 import org.blurayx.uhd.ui.HVideoConfigurationTemplateUHD;
 
+// created by HScreen
 public class HVideoDevice extends HScreenDevice {
-    protected HVideoDevice() {
+    protected HVideoDevice() {      
         boolean is_p6 = isProfile6();
         boolean is_p5 = isProfile5();
         int length = HScreenConfigTemplate.defaultConfig.length;
