@@ -18,8 +18,10 @@
  */
 package javax.tv.graphics;
 
-import java.awt.Container;
+import java.awt.Container;	
+
 import javax.tv.xlet.XletContext;
+
 import org.havi.ui.HSceneFactory;
 
 import org.videolan.BDJXletContext;

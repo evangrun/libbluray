@@ -19,37 +19,27 @@
 
 package javax.awt;
 
-import java.awt.*;
 import java.awt.Dialog.ModalExclusionType;
 import java.awt.Dialog.ModalityType;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.HeadlessException;
+import java.awt.PrintJob;
 import java.awt.datatransfer.Clipboard;
 import java.awt.font.TextAttribute;
 import java.awt.im.InputMethodHighlight;
+
 import java.util.Map;
 import java.util.Properties;
 
-import javax.awt.NullGraphics;
-
+//	instance of the toolkit
 public class BDToolkit extends BDToolkitBase {
 
     public BDToolkit () {
     }
 
-    Graphics getGraphics(Window window) {
-        if (!(window instanceof BDRootWindow)) {
-            return new NullGraphics(window);
-        }
-        return new BDWindowGraphics((BDRootWindow)window);
-    }
-
-    public void sync() {
-        Window window = ((BDGraphicsDevice)getLocalGraphicsEnvironment().getDefaultScreenDevice()).getWindow();
-        if (window instanceof BDRootWindow)
-            ((BDRootWindow)window).sync();
-    }
-
-	@Override
+    @Override
 	public FontMetrics getFontMetrics(Font font) {
 		// TODO Auto-generated method stub
 		return null;
@@ -68,6 +58,12 @@ public class BDToolkit extends BDToolkitBase {
 	}
 
 	@Override
+	public Map<TextAttribute, ?> mapInputMethodHighlight(InputMethodHighlight highlight) throws HeadlessException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public boolean isModalityTypeSupported(ModalityType modalityType) {
 		// TODO Auto-generated method stub
 		return false;
@@ -77,11 +73,5 @@ public class BDToolkit extends BDToolkitBase {
 	public boolean isModalExclusionTypeSupported(ModalExclusionType modalExclusionType) {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public Map<TextAttribute, ?> mapInputMethodHighlight(InputMethodHighlight highlight) throws HeadlessException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

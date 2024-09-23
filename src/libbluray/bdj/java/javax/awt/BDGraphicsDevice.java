@@ -43,6 +43,7 @@ class BDGraphicsDevice extends GraphicsDevice {
         return new GraphicsConfiguration[] { configuration };
     }
 
+    //	@@@ depends on BR type
     Rectangle getBounds() {
         return new Rectangle(1920, 1080);
     }
@@ -50,19 +51,16 @@ class BDGraphicsDevice extends GraphicsDevice {
     public int getAvailableAcceleratedMemory() {
         return 0;
     }
+    boolean isWindowPerpixelTranslucencySupported() {
+        return true;
+    }
 
     public boolean isFullScreenSupported() {
         return false;
     }
-
     public Window getFullScreenWindow() {
         return null;
     }
-
     public void setFullScreenWindow(Window window) {
-    }
-
-    boolean isWindowPerpixelTranslucencySupported() {
-        return true;
     }
 }

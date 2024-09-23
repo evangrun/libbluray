@@ -2167,8 +2167,10 @@ int bd_read_skip_still(BLURAY *bd)
 
     bd_mutex_lock(&bd->mutex);
 
-    if (st->clip) {
-        if (st->clip->still_mode == BLURAY_STILL_TIME) {
+    if (st->clip) 
+    {
+        if (st->clip->still_mode != BLURAY_STILL_NONE) 
+        {
             st->clip = nav_next_clip(bd->title, st->clip);
             if (st->clip) {
                 ret = _open_m2ts(bd, st);

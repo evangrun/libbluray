@@ -19,7 +19,7 @@
 
 package javax.awt;
 
-import java.awt.image.*;	
+import java.awt.image.*;		
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
@@ -31,9 +31,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Composite;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 
 import javax.awt.ConstrainableGraphics;
-import java.awt.Graphics;
+
 import java.lang.reflect.Field;
 import java.text.AttributedCharacterIterator;
 import java.util.ArrayList;
@@ -49,9 +50,11 @@ import org.dvb.ui.UnsupportedDrawingOperationException;
 import org.videolan.GUIManager;
 import org.videolan.Logger;
 
-abstract class BDGraphicsBase extends java.awt.Graphics2D implements ConstrainableGraphics {
+// the base for all graphics rendering
+abstract class BDGraphicsBase extends java.awt.Graphics2D implements ConstrainableGraphics 
+{
     private static final Color DEFAULT_COLOR = Color.BLACK;
-    private static Font DEFAULT_FONT;
+    private static java.awt.Font DEFAULT_FONT;
 
     private int width;
     private int height;
@@ -60,7 +63,7 @@ abstract class BDGraphicsBase extends java.awt.Graphics2D implements Constrainab
     private GraphicsConfiguration gc;
     private Color foreground;
     protected Color background;
-    private Font font;
+    private java.awt.Font font;
     private BDFontMetrics fontMetrics;
     private AlphaComposite composite;
 
@@ -135,9 +138,9 @@ abstract class BDGraphicsBase extends java.awt.Graphics2D implements Constrainab
         postInit();
     }
 
-    private static Font getDefaultFont() {
+    private static java.awt.Font getDefaultFont() {
         if (DEFAULT_FONT == null)
-            DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 12);
+            DEFAULT_FONT = new java.awt.Font("Dialog", java.awt.Font.PLAIN, 12);
         return DEFAULT_FONT;
     }
 
@@ -215,7 +218,7 @@ abstract class BDGraphicsBase extends java.awt.Graphics2D implements Constrainab
         originY += y;
     }
 
-    public void setFont(Font font) {
+    public void setFont(java.awt.Font font) {
         if (font != null && !font.equals(this.font)) {
             this.font = font;
             fontMetrics = null;
@@ -229,18 +232,24 @@ abstract class BDGraphicsBase extends java.awt.Graphics2D implements Constrainab
     }
 
     public FontMetrics getFontMetrics() {
+    	return null;
+    	/*
         if (fontMetrics == null) {
             fontMetrics = BDFontMetrics.getFontMetrics(getFont());
         }
         return fontMetrics;
+        */
     }
 
-    public FontMetrics getFontMetrics(Font font) {
+    public FontMetrics getFontMetrics(java.awt.Font font) {
+    	return null;
+    	/*
         if (font != null) {
             return BDFontMetrics.getFontMetrics(font);
         }
         logger.error("getFontMetrics(null) from " + Logger.dumpStack());
         return null;
+        */
     }
 
     public void setColor(Color c) {

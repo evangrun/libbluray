@@ -310,16 +310,21 @@ public class IxcRegistryImpl {
                     retInCaller = IxcRegistryImpl.this.wrapOrCopy(ret, calleeContext, callerContext);
                 } catch (IllegalArgumentException e) {
                     exception = e;
+                    TRACE("Got a IllegalArgumentException in thread:" + e.getMessage());
                 } catch (IllegalAccessException e) {
                     exception = e;
+                    TRACE("Got a IllegalAccessException in thread: " + e.getMessage());
                 } catch (InvocationTargetException e) {
                     try {
                         exception = ((Exception)IxcRegistryImpl.this.wrapOrCopy(e, calleeContext, callerContext));
+                        TRACE("Got a RemoteException in thread: " + exception.getMessage());
                     } catch (RemoteException e1) {
                         exception = e1;
+                        TRACE("Got a RemoteException in thread: " + e1.getMessage());
                     }
                 } catch (RemoteException e) {
                     exception = e;
+                    TRACE("Got a RemoteException in thread: " + e.getMessage());
                 } finally {
                     finished = true;
                 }
@@ -334,7 +339,7 @@ public class IxcRegistryImpl {
                     for (int i = 0; i < methodsInCaller.length; i++) {
                         if (methodsInCaller[i].equals(method)) {
                             Method result = methodsInCallee[i];
-                            TRACE("method in callee: " + result);
+                            TRACE("found method in callee: " + result);
                             return result;
                         }
                     }

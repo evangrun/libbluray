@@ -844,35 +844,37 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
     //  add our classpath
     option[n++].optionString = str_printf("-Djava.class.path=%s", cfg->classpath);
 
+    //  patch java base for our code 
+    option[n++].optionString = str_printf("--patch-module=java.base=%s", cfg->classpath);
     // AWT needs to access logger and Xlet context 
     option[n++].optionString = str_dup("--add-opens=java.base/org.videolan=java.desktop");
     // AWT needs to acess DVBGraphics 
     option[n++].optionString = str_dup("--add-exports=java.base/org.dvb.ui=java.desktop");
-    // org.videolan.FontIndex -> java.xml. 
-    option[n++].optionString = str_dup("--add-reads=java.base=java.xml");
     //  add that we will use the java.desktop packages
     option[n++].optionString = str_dup("--add-reads=java.base=java.desktop");
-    //  patch java base for our code 
-    option[n++].optionString = str_printf("--patch-module=java.base=%s", cfg->classpath);
     //  set the graphics environment to us
     option[n++].optionString = str_dup("-Djava.awt.graphicsenv=java.awt.BDGraphicsEnvironment");
+    //  we run with graphics
     option[n++].optionString = str_dup("-Djava.awt.headless=false");
-
+    //  set the toolkit to use (our runtime environment)
+    option[n++].optionString = str_dup("-Dawt.toolkit=java.awt.BDToolkit");
     // org.videolan.IxcRegistryImpl -> java.rmi.Remote 
     option[n++].optionString = str_dup("--add-reads=java.base=java.rmi");
     // org.videolan.FontIndex -> java.xml. 
     option[n++].optionString = str_dup("--add-reads=java.base=java.xml");
+    //  we all need access to the hidden packages from sun
+    //  see also: https://stackoverflow.com/questions/53801778/is-sun-awt-image-package-deprecated
+    option[n++].optionString = str_dup("--add-exports=java.desktop/sun.awt.image=java.base");
+    //  add sun.net for URL stuff
+    option[n++].optionString = str_dup("--add-exports=java.base/sun.net.util=java.base");
 
-//    option[n++].optionString = str_dup   ("-Dawt.toolkit=java.awt.BDToolkit");
-
-
+    //  set the heap sizes?
 //    option[n++].optionString = str_dup   ("-Xms256M");
 //    option[n++].optionString = str_dup   ("-Xmx256M");
+    //  set the maximum stack
 //    option[n++].optionString = str_dup   ("-Xss2048k");
 
     /*
-    // org.havi.ui.HBackgroundImage needs to access sun.awt.image.FileImageSource 
-    option[n++].optionString = str_dup("--add-exports=java.desktop/sun.awt.image=java.base");
     */
 
     // Export BluRay packages to Xlets 
@@ -885,22 +887,22 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
         BD_DEBUG(DBG_CRIT | DBG_BDJ, "Disabling BD-J JIT\n");
         option[n++].optionString = str_dup("-Xint");
     }
-/*
-    if (getenv("BDJ_JVM_DEBUG")) 
+
+    //  allow for remote debugging
+    //if (getenv("BDJ_JVM_DEBUG")) 
     {
         BD_DEBUG(DBG_CRIT | DBG_BDJ, "Enabling BD-J debug mode\n");
-        option[n++].optionString = str_dup("-ea");
-        //option[n++].optionString = str_dup("-verbose");
         //option[n++].optionString = str_dup("-verbose:class,gc,jni");
-        option[n++].optionString = str_dup("-Xdebug");
-        option[n++].optionString = str_dup("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
+        option[n++].optionString = str_dup("-agentlib:jdwp=transport=dt_socket,address=0.0.0.0:8100,server=y,suspend=n");
     }
-*/
+
     //  set version
     args.version = JNI_VERSION_1_8;
+    //  set options
     args.nOptions = n;
     args.options = option;
-    args.ignoreUnrecognized = JNI_TRUE; // don't ignore unrecognized options
+    // don't ignore unrecognized options
+    args.ignoreUnrecognized = JNI_FALSE;
 
 #ifdef _WIN32
     /* ... in windows, JVM options are not UTF8 but current system code page ... */

@@ -26,6 +26,8 @@ import java.util.Locale;
 
 import org.videolan.Logger;
 
+//	Main gfx environment for the br playback. 
+//	Creates a BDGraphicsDevice
 public class BDGraphicsEnvironment extends GraphicsEnvironment {
     private BDGraphicsDevice graphicsDevice;
 

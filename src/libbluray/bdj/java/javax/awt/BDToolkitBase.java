@@ -36,24 +36,33 @@ import java.util.Iterator;
 import org.videolan.BDJXletContext;
 import org.videolan.Logger;
 
+import javax.awt.NullGraphics;
+
+//	This is te base we start from. It runs the whole environment. 
+//	It is set by passing -Dawt.toolkit=java.awt.BDToolkit to the startup of the VM. 
 abstract class BDToolkitBase extends Toolkit {
     private EventQueue eventQueue = new EventQueue();
+    //	create the graphics environemt
     private BDGraphicsEnvironment localEnv = new BDGraphicsEnvironment();
     private BDGraphicsConfiguration defaultGC = (BDGraphicsConfiguration)localEnv.getDefaultScreenDevice().getDefaultConfiguration();
+    //	create hash for images
     private static Hashtable cachedImages = new Hashtable();
+    //	start a logger
     private static final Logger logger = Logger.getLogger(BDToolkit.class.getName());
-
     // mapping of Components to AppContexts, WeakHashMap<Component,AppContext>
     private static final Map contextMap = Collections.synchronizedMap(new WeakHashMap());
-
-
+    //	current focus window
+    protected static Window focusWindow;
+    
     public BDToolkitBase () {
     }
 
     public static void setFocusedWindow(Window window) {
+    	focusWindow = window;
     }
 
-    public static void shutdownDisc() {
+    public static void shutdownDisc() 
+    {
         try {
             Toolkit toolkit = getDefaultToolkit();
             if (toolkit instanceof BDToolkit) {
@@ -64,26 +73,32 @@ abstract class BDToolkitBase extends Toolkit {
         }
     }
 
-    protected void shutdown() {
-        /*
+    protected void shutdown() 
+    {
         if (eventQueue != null) {
             BDJHelper.stopEventQueue(eventQueue);
             eventQueue = null;
         }
-        */
         cachedImages.clear();
         contextMap.clear();
     }
 
+    public void sync() {
+    	logger.info("sync called");
+    	if (focusWindow instanceof BDRootWindow)
+    		((BDRootWindow)focusWindow).sync();
+    }
+    
     public Dimension getScreenSize() {
         Rectangle dims = defaultGC.getBounds();
         return new Dimension(dims.width, dims.height);
     }
 
     Graphics getGraphics(Window window) {
+        logger.error("asked for a graphics object");
         if (!(window instanceof BDRootWindow)) {
             logger.error("getGraphics(): not BDRootWindow");
-            throw new Error("Not implemented");
+            return new NullGraphics(window);
         }
         return new BDWindowGraphics((BDRootWindow)window);
     }
@@ -105,7 +120,11 @@ abstract class BDToolkitBase extends Toolkit {
     }
 
     public FontMetrics getFontMetrics(Font font) {
+        logger.info("getFontMetrics called for font: " + font);
+    	return null;
+    	/*
         return BDFontMetrics.getFontMetrics(font);
+        */
     }
 
     static void clearCache(BDImage image) {
@@ -125,7 +144,7 @@ abstract class BDToolkitBase extends Toolkit {
         if (BDJXletContext.getCurrentContext() == null) {
             logger.error("getImage(): no context " + Logger.dumpStack());
         }
-
+        logger.info("getImage called with filename: " + filename);
         if (cachedImages.containsKey(filename))
             return (Image)cachedImages.get(filename);
         Image newImage = createImage(filename);
@@ -138,6 +157,7 @@ abstract class BDToolkitBase extends Toolkit {
         if (BDJXletContext.getCurrentContext() == null) {
             logger.error("getImage(): no context " + Logger.dumpStack());
         }
+        logger.info("getImage called with url: " + url);
 
         if (cachedImages.containsKey(url))
             return (Image)cachedImages.get(url);
@@ -147,19 +167,27 @@ abstract class BDToolkitBase extends Toolkit {
         return newImage;
     }
 
-    public Image createImage(String filename) {
-        if (BDJXletContext.getCurrentContext() == null) {
+    public Image createImage(String filename) 
+    {
+        logger.info("createImage called for: " + filename);
+        if (BDJXletContext.getCurrentContext() == null) 
+        {
             logger.error("createImage(): no context " + Logger.dumpStack());
         }
 
-        if (!new File(filename).isAbsolute()) {
+        if (!new File(filename).isAbsolute()) 
+        {
             String home = BDJXletContext.getCurrentXletHome();
-            if (home != null) {
+            if (home != null) 
+            {
                 String homeFile = home + filename;
-                if (new File(homeFile).exists()) {
+                if (new File(homeFile).exists()) 
+                {
                     logger.warning("resource translated to " + homeFile);
                     filename = homeFile;
-                } else {
+                } 
+                else 
+                {
                     logger.error("resource " + homeFile + " does not exist");
                 }
             }
@@ -170,7 +198,9 @@ abstract class BDToolkitBase extends Toolkit {
         return newImage;
     }
 
-    public Image createImage(URL url) {
+    public Image createImage(URL url) 
+    {
+        logger.info("createImage called for url: " + url);
         if (BDJXletContext.getCurrentContext() == null) {
             logger.error("createImage(): no context " + Logger.dumpStack());
         }
@@ -179,9 +209,9 @@ abstract class BDToolkitBase extends Toolkit {
         return newImage;
     }
 
-    public Image createImage(byte[] imagedata,
-        int imageoffset,
-        int imagelength) {
+    public Image createImage(byte[] imagedata, int imageoffset, int imagelength) 
+    {
+        logger.info("createImage(): offset " + imageoffset + ", imagelength: " + imagelength);
 
         if (BDJXletContext.getCurrentContext() == null) {
             logger.error("createImage(): no context " + Logger.dumpStack());
@@ -192,26 +222,34 @@ abstract class BDToolkitBase extends Toolkit {
         return newImage;
     }
 
-    public Image createImage(ImageProducer producer) {
+    public Image createImage(ImageProducer producer) 
+    {
+        logger.info("createImage(): called for Producer");
         if (BDJXletContext.getCurrentContext() == null) {
             logger.error("createImage(): no context " + Logger.dumpStack());
         }
         return new BDImageConsumer(producer);
     }
 
-    public Image createImage(Component component, int width, int height) {
+    public Image createImage(Component component, int width, int height) 
+    {
+        logger.info("createImage(): width " + component + ", Height: " + height);
         return new BDImage(component, width, height, defaultGC);
     }
 
-    public boolean prepareImage(Image image, int width, int height, ImageObserver observer) {
+    public boolean prepareImage(Image image, int width, int height, ImageObserver observer) 
+    {
+        logger.info("prepareImage(): called for Producer");
         if (!(image instanceof BDImageConsumer))
             return true;
+        logger.info("prepareImage(): width " + width + ", Height: " + height);
         BDImageConsumer img = (BDImageConsumer)image;
         return img.prepareImage(observer);
     }
 
-    public int checkImage(Image image, int width, int height,
-        ImageObserver observer) {
+    public int checkImage(Image image, int width, int height, ImageObserver observer) 
+    {
+        logger.info("checkImage(): called for Producer");
         if (!(image instanceof BDImageConsumer)) {
             return ImageObserver.ALLBITS;
         }
@@ -232,7 +270,8 @@ abstract class BDToolkitBase extends Toolkit {
         contextMap.put(component, context);
     }
 
-    public static EventQueue getEventQueue(Component component) {
+    public static EventQueue getEventQueue(Component component) 
+    {
         if (component != null) {
             do {
                 BDJXletContext ctx = (BDJXletContext)contextMap.get(component);
@@ -255,7 +294,8 @@ abstract class BDToolkitBase extends Toolkit {
         return null;
     }
 
-    protected EventQueue getSystemEventQueueImpl() {
+    protected EventQueue getSystemEventQueueImpl() 
+    {
         BDJXletContext ctx = BDJXletContext.getCurrentContext();
         if (ctx != null) {
             EventQueue eq = ctx.getEventQueue();

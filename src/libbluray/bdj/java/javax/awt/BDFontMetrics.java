@@ -66,7 +66,7 @@ public class BDFontMetrics extends java.awt.FontMetrics {
             return;
         }
 
-        /* try fontconfig */
+        /* try fontconfig, this calls native code */
         String path = resolveFontN(family, style);
         if (path != null) {
             logger.info("fontconfig: mapping " + alias + " (" + family + ") to " + path);
@@ -86,6 +86,7 @@ public class BDFontMetrics extends java.awt.FontMetrics {
                 }
             }
         );
+        //  called native? @@@
         File f = new File(javaHome, "lib" + File.separator + "fonts");
         String defaultFontPath = f.getAbsolutePath() + File.separator;
 

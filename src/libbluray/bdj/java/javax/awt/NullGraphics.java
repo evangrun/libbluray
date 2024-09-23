@@ -42,20 +42,15 @@ object to draw onto without drawing onto the screen.
     public class NullGraphics extends Graphics {
     private Color color;
     private Rectangle clipBounds;
-    private Font font;
 
     public NullGraphics(Component component) {
         color = component.getForeground();
         if (color == null)
             color = Color.black;
-        font = component.getFont();
-        if (font == null)
-            font = new Font("dialog", Font.PLAIN, 12);
     }
 
     private NullGraphics(NullGraphics g) {
         color = g.color;
-        font = g.font;
         clipBounds = g.clipBounds;
     }
 
@@ -165,35 +160,7 @@ object to draw onto without drawing onto the screen.
     public java.awt.Font getFont() {
         return null;
     }
-
-    /**
-        * Sets this graphics context's font to the specified font.
-        * All subsequent text operations using this graphics context
-        * use this font.
-        * @param  font   the font.
-        * @see     java.awt.Graphics#getFont
-        * @see     java.awt.Graphics#drawChars
-        * @see     java.awt.Graphics#drawString
-        * @see     java.awt.Graphics#drawBytes
-        * @since   JDK1.0
-        */
-    public void setFont(Font font) {
-        this .font = font;
-    }
-
-    /**
-        * Gets the font metrics for the specified font.
-        * @return    the font metrics for the specified font.
-        * @param     f the specified font
-        * @see       java.awt.Graphics#getFont
-        * @see       java.awt.FontMetrics
-        * @see       java.awt.Graphics#getFontMetrics()
-        * @since     JDK1.0
-        */
-    public FontMetrics getFontMetrics(Font f) {
-        return Toolkit.getDefaultToolkit().getFontMetrics(f);
-    }
-
+    
     /**
         * Returns the bounding rectangle of the current clipping area.
         * The coordinates in the rectangle are relative to the coordinate
@@ -301,8 +268,7 @@ object to draw onto without drawing onto the screen.
         * @param       dy the vertical distance to copy the pixels.
         * @since       JDK1.0
         */
-    public void copyArea(int x, int y, int width, int height, int dx,
-            int dy) {
+    public void copyArea(int x, int y, int width, int height, int dx, int dy) {
     }
 
     /**
@@ -492,4 +458,13 @@ object to draw onto without drawing onto the screen.
 
     public void dispose() {
     }
+
+	@Override
+	public void setFont(java.awt.Font font) {
+	}
+
+	@Override
+	public FontMetrics getFontMetrics(java.awt.Font f) {
+		return null;
+	}
 }

@@ -146,7 +146,7 @@ public class BDJHelper {
 
     private static boolean postMouseEventImpl(int id, int button) {
     	java.awt.KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        Component focusOwner = (Component)genericInvokeMethod(mgr, "getGlobalFocusOwner");
+        Component focusOwner = (Component)genericInvokeMethod(mgr, "getFocusOwner");
         if (focusOwner != null) {
             EventQueue eq = BDToolkit.getEventQueue(focusOwner);
             if (eq != null) {
@@ -170,7 +170,7 @@ public class BDJHelper {
     public static boolean postKeyEvent(int id, int modifiers, int keyCode) 
     {
     	java.awt.KeyboardFocusManager mgr = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        Component focusOwner = (Component)genericInvokeMethod(mgr, "getGlobalFocusOwner");
+        Component focusOwner = (Component)genericInvokeMethod(mgr, "getFocusOwner");
         if (focusOwner != null) 
         {
             long when = System.currentTimeMillis();

@@ -27,10 +27,12 @@ package javax.awt.image;
 
 import java.io.InputStream;
 import java.io.IOException;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.MalformedURLException;
+
 import sun.net.util.URLUtil;
 
 public class URLImageSource extends InputStreamImageSource {

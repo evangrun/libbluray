@@ -47,8 +47,10 @@ public class BDRootWindow extends Frame {
         return defaultFont;
     }
  
-    public void setDefaultFont(String defaultFontstring) {
-        if (defaultFontstring == null || defaultFontstring.equals("*****")) {
+    public void setDefaultFont(String defaultFontstring) 
+    {
+        if (defaultFontstring == null || defaultFontstring.equals("*****")) 
+        {
             defaultFont = null;
         } 
         else 
@@ -62,20 +64,31 @@ public class BDRootWindow extends Frame {
                 logger.error("Failed setting default font " + defaultFontstring + ".otf: " + ex);
             } 
         }
-        logger.info("setting default font to " + defaultFontstring + ".otf (" + defaultFont + ")");
+        if(defaultFont != null) {
+        	logger.info("setting default font to " + defaultFontstring + ".otf (" + defaultFont + ")");
+        }
+        else {
+        	logger.info("Cleared default font.");
+        }
     }
 
 
-    public void setBounds(int x, int y, int width, int height) {
-        if (!isVisible()) {
-            if ((width > 0) && (height > 0)) {
-                if ((backBuffer == null) || (getWidth() * getHeight() < width * height)) {
+    public void setBounds(int x, int y, int width, int height) 
+    {
+        if (!isVisible()) 
+        {
+            if ((width > 0) && (height > 0)) 
+            {
+                if ((backBuffer == null) || (getWidth() * getHeight() < width * height)) 
+                {
                     backBuffer = new int[width * height];
                     Arrays.fill(backBuffer, 0);
                 }
             }
             super.setBounds(x, y, width, height);
-        } else if (width != getWidth() || height != getHeight()){
+        } 
+        else if (width != getWidth() || height != getHeight())
+        {
             logger.error("setBounds(" + x + "," + y + "," + width + "," + height + ") FAILED: already visible");
         }
     }
@@ -86,44 +99,50 @@ public class BDRootWindow extends Frame {
 
     public Image getBackBuffer() {
         /* exists only in J2SE */
-        logger.unimplemented("getBackBuffer");
+        logger.unimplemented("getBackBuffer called, not implenented");
         return null;
     }
 
-    private boolean isBackBufferClear() {
+    private boolean isBackBufferClear() 
+    {
         int v = 0;
-        for (int i = 0; i < height * width; i++)
+        for (int i = 0; i < getHeight() * getWidth(); i++)
             v |= backBuffer[i];
         return v == 0;
     }
 
-    public void notifyChanged() {
+    public void notifyChanged() 
+    {
         if (!isVisible()) {
             logger.error("sync(): not visible");
             return;
         }
         synchronized (this) {
             if (timer == null) {
-                logger.error("notifyChanged(): window already disposed");
+                logger.error("notifyChanged(): window already disposed, cant refresh.");
                 return;
             }
             changeCount++;
-            if (timerTask == null) {
+            if (timerTask == null) 
+            {
                 timerTask = new RefreshTimerTask(this);
                 timer.schedule(timerTask, 40, 40);
             }
         }
     }
 
-    public void sync() {
-        synchronized (this) {
+    public void sync() 
+    {
+        synchronized (this) 
+        {
             if (timerTask != null) {
                 timerTask.cancel();
                 timerTask = null;
             }
             changeCount = 0;
 
-            if (!isVisible()) {
+            if (!isVisible()) 
+            {
                 if (overlay_open) {
                     logger.info("sync(): close OSD (not visible)");
                     close();
@@ -134,7 +153,8 @@ public class BDRootWindow extends Frame {
 
             Area a = dirty.getBoundsAndClear();
 
-            if (!a.isEmpty()) {
+            if (!a.isEmpty()) 
+            {
                 if (!overlay_open) {
 
                     /* delay opening overlay until something has been drawn */
@@ -182,21 +202,26 @@ public class BDRootWindow extends Frame {
         }
     }
 
-    public void setVisible(boolean visible) {
-
+    public void setVisible(boolean visible) 
+    {
         super.setVisible(visible);
-
-        if (!visible) {
+        if (!visible) 
+        {
             close();
         }
     }
 
     /* called when new title starts (window is "created" again) */
-    public void clearOverlay() {
-        synchronized (this) {
+    public void clearOverlay() 
+    {
+        synchronized (this) 
+        {
             if (overlay_open) {
                 logger.error("clearOverlay() ignored (overlay is visible)");
-            } else {
+            } 
+            else 
+            {
+                logger.info("clearOverlay() called for main window.");
                 dirty.getBoundsAndClear();
                 Arrays.fill(backBuffer, 0);
             }

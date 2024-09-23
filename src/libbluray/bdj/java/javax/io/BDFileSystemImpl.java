@@ -37,7 +37,7 @@ class BDFileSystemImpl extends BDFileSystem {
 
       /* Not in SE */
     public boolean deleteOnExit(File f) {
-        return fs.deleteOnExit(f);
+        return false;
     }
 
 	@Override
