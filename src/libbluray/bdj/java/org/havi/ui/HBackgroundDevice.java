@@ -25,7 +25,6 @@ import org.blurayx.uhd.ui.HBackgroundConfigurationTemplateUHD;
 
 import java.awt.Color;
 
-//created by HScreen
 public class HBackgroundDevice extends HScreenDevice {
     protected HBackgroundDevice() {
         boolean is_p6 = isProfile6();

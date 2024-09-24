@@ -35,11 +35,7 @@ public class DVBBufferedImage extends Image {
         this(width, height, TYPE_BASE);
     }
 
-    public DVBBufferedImage(int width, int height, int type) 
-    {
-
-        org.videolan.Logger.unimplemented("DVBBufferedImage", "DVBBufferedImage()");
-    
+    public DVBBufferedImage(int width, int height, int type) {
         if (type != TYPE_BASE && type != TYPE_ADVANCED) {
             throw new IllegalArgumentException(err("Unknown image type " + type));
         }
@@ -59,8 +55,6 @@ public class DVBBufferedImage extends Image {
     }
 
     private DVBBufferedImage(BufferedImage image, int type) {
-
-        org.videolan.Logger.unimplemented("DVBBufferedImage", "DVBBufferedImage()");
         if (image == null) {
             throw new IllegalArgumentException(err("null image"));
         }
@@ -73,7 +67,6 @@ public class DVBBufferedImage extends Image {
             err("disposed");
             return null;
         }
-        org.videolan.Logger.unimplemented("DVBBufferedImage", "createGraphics()");
         DVBGraphics gfx = new DVBGraphicsImpl(bufferedImage.createGraphics());
         gfx.type = type;
         return gfx;

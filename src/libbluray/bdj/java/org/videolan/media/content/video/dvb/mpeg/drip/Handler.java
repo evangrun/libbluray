@@ -45,7 +45,7 @@ public class Handler implements Player {
         controls[0] = new BackgroundVideoPresentationControlImpl(this);
     }
 
-    public void setSource(DataSource source) throws IncompatibleSourceException {
+    public void setSource(DataSource source) throws IOException, IncompatibleSourceException {
         this.source = new org.videolan.media.protocol.dripfeed.DataSource(source.getLocator());
         if (source.getLocator() == null)
             throw new IncompatibleSourceException();
@@ -168,7 +168,7 @@ public class Handler implements Player {
     }
 
     public Component getVisualComponent() {
-        return dummyComponent;
+        return null;
     }
 
     public GainControl getGainControl() {
@@ -176,7 +176,7 @@ public class Handler implements Player {
     }
 
     public Component getControlPanelComponent() {
-        return dummyComponent;
+        return null;
     }
 
     public void addController(Controller newController)
@@ -195,6 +195,4 @@ public class Handler implements Player {
     protected Control[] controls = null;
     private org.videolan.media.protocol.dripfeed.DataSource source = null;
     private ArrayList listeners = new ArrayList();
-    private static Component dummyComponent = null;
-
 }

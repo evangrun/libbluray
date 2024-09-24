@@ -19,30 +19,22 @@
  */
 package org.videolan;
 
-import java.awt.Container;		
+import java.awt.Container;
 import java.awt.EventQueue;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import java.util.LinkedList;
 import java.util.HashMap;
-
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-
-import javax.awt.BDJHelper;
 
 import javax.microedition.xlet.UnavailableContainerException;
 
 import org.bluray.ui.FrameAccurateAnimation;
-
 import org.dvb.application.AppID;
 import org.dvb.application.AppProxy;
 import org.dvb.application.AppsDatabase;
-
 import org.havi.ui.HSceneFactory;
-
 import org.videolan.bdjo.AppCache;
 import org.videolan.bdjo.AppEntry;
 
@@ -266,8 +258,8 @@ public class BDJXletContext implements javax.tv.xlet.XletContext, javax.microedi
     protected int numEventQueueThreads() {
         int cnt = 0;
         if (eventQueue != null) {
-            Object t = javax.awt.BDJHelper.getEventDispatchThread(eventQueue);
-            if (t != null && javax.awt.BDJHelper.isThreadAlive(t)) {
+            Thread t = java.awt.BDJHelper.getEventDispatchThread(eventQueue);
+            if (t != null && t.isAlive()) {
                 cnt++;
             }
         }
@@ -505,7 +497,7 @@ public class BDJXletContext implements javax.tv.xlet.XletContext, javax.microedi
         EventQueue eq = eventQueue;
         eventQueue = null;
         if (eq != null) {
-            javax.awt.BDJHelper.stopEventQueue(eq);
+            java.awt.BDJHelper.stopEventQueue(eq);
         }
 
         threadGroup.stopAll(1000);

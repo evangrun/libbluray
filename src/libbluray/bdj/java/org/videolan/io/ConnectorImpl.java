@@ -28,6 +28,6 @@ import org.videolan.Logger;
 public class ConnectorImpl {
     public static Connection open(String name, int mode, boolean timeouts) throws IOException {
         Logger.getLogger(ConnectorImpl.class.getName()).unimplemented();
-        return null;
+        throw new ConnectionNotFoundException("Not implemented: " + name);
     }
 }

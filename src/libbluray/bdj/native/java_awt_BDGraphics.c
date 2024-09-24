@@ -45,7 +45,7 @@
 #endif
 
 JNIEXPORT void JNICALL
-Java_javax_awt_BDGraphics_drawStringN(JNIEnv * env, jobject obj, jlong ftFace, jstring string, jint x, jint y, jint rgb)
+Java_java_awtx_BDGraphics_drawStringN(JNIEnv * env, jobject obj, jlong ftFace, jstring string, jint x, jint y, jint rgb)
 {
 #ifdef HAVE_FT2
     jsize length;
@@ -98,15 +98,15 @@ Java_javax_awt_BDGraphics_drawStringN(JNIEnv * env, jobject obj, jlong ftFace, j
 #define VC (void*)(uintptr_t)  /* cast function pointer to void* */
 
 BD_PRIVATE CPP_EXTERN const JNINativeMethod
-Java_javax_awt_BDGraphics_methods[] =
+Java_java_awtx_BDGraphics_methods[] =
 { /* AUTOMATICALLY GENERATED */
     {
         CC("drawStringN"),
         CC("(JLjava/lang/String;III)V"),
-        VC(Java_javax_awt_BDGraphics_drawStringN),
+        VC(Java_java_awtx_BDGraphics_drawStringN),
     },
 };
 
 BD_PRIVATE CPP_EXTERN const int
-Java_javax_awt_BDGraphics_methods_count =
-     sizeof(Java_javax_awt_BDGraphics_methods)/sizeof(Java_javax_awt_BDGraphics_methods[0]);
+Java_java_awtx_BDGraphics_methods_count =
+     sizeof(Java_java_awtx_BDGraphics_methods)/sizeof(Java_java_awtx_BDGraphics_methods[0]);

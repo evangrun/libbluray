@@ -42,7 +42,7 @@ public class DataSource extends javax.media.protocol.DataSource {
     }
 
     // TODO: support all content types
-    public void connect()  {
+    public void connect() throws IOException {
         try {
             BDLocator locator = new BDLocator(getLocator().toExternalForm());
 
@@ -61,13 +61,12 @@ public class DataSource extends javax.media.protocol.DataSource {
         contentType = "unknown";
     }
 
-    public void start() {
-//        if (contentType.equals("unknown"))
-        	
-            // throw new IOException("Unknown content type.");
+    public void start() throws IOException {
+        if (contentType.equals("unknown"))
+            throw new IOException("Unknown content type.");
     }
 
-    public void stop() {
+    public void stop() throws IOException {
     }
 
     private String contentType = "unknown";

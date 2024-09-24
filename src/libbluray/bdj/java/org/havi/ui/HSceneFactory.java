@@ -28,10 +28,7 @@ public class HSceneFactory extends Object {
     }
 
     public static HSceneFactory getInstance() {
-
-        org.videolan.Logger.unimplemented("HSceneFactory", "getInstance()");
-
-    	BDJXletContext context = BDJXletContext.getCurrentContext();
+        BDJXletContext context = BDJXletContext.getCurrentContext();
         if (context != null) {
             if (context.getSceneFactory() == null) {
                 context.setSceneFactory(new HSceneFactory());
@@ -69,7 +66,6 @@ public class HSceneFactory extends Object {
 
     public HScene getDefaultHScene(HScreen screen)
     {
-        org.videolan.Logger.unimplemented("HSceneFactory", "getDefaultHScene()");
         synchronized(HSceneFactory.class) {
             if (defaultHScene == null) {
                 defaultHScene = new HScene();

@@ -40,8 +40,7 @@ class BDJAppProxy implements DVBJProxy, Runnable {
         return proxy;
     }
 
-    private void startThread() 
-    {
+    private void startThread() {
         thread = new Thread(context.getThreadGroup(), this, "BDJAppProxy");
         thread.setDaemon(true);
         thread.start();
@@ -50,8 +49,7 @@ class BDJAppProxy implements DVBJProxy, Runnable {
          * We want event dispatcher thread to be inside xlet thread group
          * -> event queue must be created from thread running inside applet thread group.
          */
-        while (context.getEventQueue() == null) 
-        {
+        while (context.getEventQueue() == null) {
             Thread.yield();
         }
     }
@@ -192,24 +190,16 @@ class BDJAppProxy implements DVBJProxy, Runnable {
             (String)context.getXletProperty("dvb.org.id") + File.separator;
         final String persistentApp = persistentOrg + (String)context.getXletProperty("dvb.app.id");
         File f = new File(persistentApp);
-        if (!f.isDirectory() && !f.mkdirs()) 
-        {
-        	if(!f.exists())	// might be still around
-        	{
-        		logger.error("Error creating persistent storage " + persistentApp);
-        	}
+        if (!f.isDirectory() && !f.mkdirs()) {
+            logger.error("Error creating persistent storage " + persistentApp);
         }
 
         final String budaOrg = System.getProperty("bluray.bindingunit.root") + File.separator +
             (String)context.getXletProperty("dvb.org.id") + File.separator;
         final String budaDisc = budaOrg + org.bluray.ti.DiscManager.getDiscManager().getCurrentDisc().getId();
         File fb = new File(budaDisc);
-        if (!fb.isDirectory() && !fb.mkdirs()) 
-        {
-        	if(!fb.exists())	// might be still around
-        	{
-        		logger.error("Error creating BUDA storage " + budaDisc);
-        	}
+        if (!fb.isDirectory() && !fb.mkdirs()) {
+            logger.error("Error creating BUDA storage " + budaDisc);
         }
 
         synchronized (cleanupMapLock) {

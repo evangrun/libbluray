@@ -19,10 +19,10 @@
 
 package org.dvb.event;
 
+import java.awt.BDJHelper;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.awt.BDJHelper;
 import javax.tv.xlet.XletContext;
 
 import org.davic.resources.ResourceClient;

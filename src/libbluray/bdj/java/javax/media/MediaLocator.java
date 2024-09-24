@@ -19,8 +19,7 @@
 
 package javax.media;
 
-import java.io.Serializable;	
-
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 

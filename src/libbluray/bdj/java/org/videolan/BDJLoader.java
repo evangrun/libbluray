@@ -226,13 +226,12 @@ public class BDJLoader {
 
             // start bdj window
             GUIManager gui = GUIManager.createInstance();
-            TerminalInfo terminfo = bdjo.getTerminalInfo();          
+            TerminalInfo terminfo = bdjo.getTerminalInfo();
             GraphicsResolution res = terminfo.getResolution();
             gui.setDefaultFont(terminfo.getDefaultFont());
             gui.setResizable(true);
             gui.setSize(res.getWidth(), res.getHeight());
             gui.setVisible(true);
-            logger.info("Starting window: " + terminfo.toString());
 
             Libbluray.setUOMask(terminfo.getMenuCallMask(), terminfo.getTitleSearchMask());
             Libbluray.setKeyInterest(bdjo.getKeyInterestTable());

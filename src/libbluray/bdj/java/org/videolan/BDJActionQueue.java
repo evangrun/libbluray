@@ -149,37 +149,29 @@ public class BDJActionQueue implements Runnable {
             notifyAll();
         }
 
-        public void run() 
-        {
+        public void run() {
             Object loggedAction = null;
-            synchronized (this) 
-            {
-                logger.info("Started a thread (" + thread + ")");
-                while (!terminate) 
-                {
+            synchronized (this) {
+                while (!terminate) {
 
-                    if (loggedAction != null && currentAction != loggedAction) 
-                    {
+                    if (loggedAction != null && currentAction != loggedAction) {
                         loggedAction = null;
                         logger.info("Callback returned (" + thread + ")");
                     }
 
-                    try 
-                    {
+                    try {
                         if (currentAction == null) {
                             wait();
                         } else {
                             Object cachedAction = currentAction;
                             wait(5000);
                             if (currentAction == cachedAction && loggedAction != cachedAction) {
-                                logger.error("Callback timeout in " + thread + ", callback=" + currentAction + "\n" +  PortingHelper.dumpStack(thread));
+                                logger.error("Callback timeout in " + thread + ", callback=" + currentAction + "\n" +
+                                             PortingHelper.dumpStack(thread));
                                 loggedAction = cachedAction;
                             }
                         }
-                    } 
-                    catch (InterruptedException e) 
-                    {
-                        logger.error("Thread threw an exception" + e.getMessage());
+                    } catch (InterruptedException e) {
                     }
                 }
             }

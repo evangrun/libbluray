@@ -20,26 +20,21 @@
 
 package org.videolan;
 
-import java.awt.event.KeyEvent;	
-import java.awt.event.MouseEvent
-;
+import java.awt.BDFontMetrics;
+import java.awt.BDToolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.File;
-
 import java.lang.reflect.Method;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-
-import javax.awt.BDToolkit;
-import javax.awt.BDFontMetrics;
 
 import javax.media.PackageManager;
 import javax.tv.service.SIManager;
 import javax.tv.service.SIManagerImpl;
 import javax.tv.service.selection.ServiceContextFactory;
 import javax.tv.service.selection.ServiceContextFactoryImpl;
-
 import org.bluray.bdplus.Status;
 import org.bluray.net.BDLocator;
 import org.bluray.system.RegisterAccess;
@@ -55,9 +50,6 @@ import org.videolan.media.content.PlayerManager;
 
 /**
  * This class allows BDJ to call various libbluray functions.
- * It is the main entry into the c code.
- * 
- * Fist method (after verything loads) will be init
  */
 public class Libbluray {
 
@@ -194,7 +186,7 @@ public class Libbluray {
         }
 
         /* enable filesystem hooks */
-        javax.io.BDFileSystem.setBooted();
+        java.io.BDFileSystem.setBooted();
     }
 
     private static String canonicalize(String path, boolean create) {
@@ -244,6 +236,7 @@ public class Libbluray {
         initOnce();
 
         /* set up directories */
+
         try {
             if (persistentRoot == null) {
                 /* no persistent storage */
@@ -290,9 +283,7 @@ public class Libbluray {
 
         try {
             BDFontMetrics.init();
-        } 
-        catch (Throwable t) 
-        {
+        } catch (Throwable t) {
         }
 
         byte[] type = getAacsData(4096);
@@ -302,9 +293,7 @@ public class Libbluray {
             if (pkg != null) {
                 System.out.println("using " + pkg);
             }
-        } 
-        catch (java.io.UnsupportedEncodingException uee) 
-        {
+        } catch (java.io.UnsupportedEncodingException uee) {
             pkg = null;
         }
 
@@ -498,7 +487,7 @@ public class Libbluray {
     public static int numTitles() {
         return titleInfos.length - 2;
     }
- 
+
     /* used by org/bluray/ti/TitleImpl */
     public static TitleInfo getTitleInfo(int titleNum) {
             int numTitles = numTitles();
@@ -780,13 +769,13 @@ public class Libbluray {
             case 17: /* BD_VK_MOUSE_ACTIVATE */
                 result = false;
                 if ((param & 0x80000000) != 0) {
-                    result = javax.awt.BDJHelper.postMouseEvent(MouseEvent.MOUSE_PRESSED) || result;
+                    result = java.awt.BDJHelper.postMouseEvent(MouseEvent.MOUSE_PRESSED) || result;
                 }
                 if ((param & 0x40000000) != 0) {
-                    result = javax.awt.BDJHelper.postMouseEvent(MouseEvent.MOUSE_CLICKED) || result;
+                    result = java.awt.BDJHelper.postMouseEvent(MouseEvent.MOUSE_CLICKED) || result;
                 }
                 if ((param & 0x20000000) != 0) {
-                    result = javax.awt.BDJHelper.postMouseEvent(MouseEvent.MOUSE_RELEASED) || result;
+                    result = java.awt.BDJHelper.postMouseEvent(MouseEvent.MOUSE_RELEASED) || result;
                 }
                 key = -1;
                 break;
@@ -810,7 +799,7 @@ public class Libbluray {
             }
             break;
         case BDJ_EVENT_MOUSE:
-            result = javax.awt.BDJHelper.postMouseEvent(param >> 16, param & 0xffff);
+            result = java.awt.BDJHelper.postMouseEvent(param >> 16, param & 0xffff);
             break;
         default:
             System.err.println("Unknown event " + event + "." + param);

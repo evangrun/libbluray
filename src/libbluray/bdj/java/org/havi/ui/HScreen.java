@@ -21,7 +21,7 @@ package org.havi.ui;
 
 public class HScreen {
     private HScreen() {
-    	hVideoDevice = new HVideoDevice();
+        hVideoDevice = new HVideoDevice();
         hGraphicsDevice = new HGraphicsDevice();
         hBackgroundDevice = new HBackgroundDevice();
     }

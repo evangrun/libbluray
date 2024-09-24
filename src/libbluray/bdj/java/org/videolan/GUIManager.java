@@ -19,9 +19,8 @@
 
 package org.videolan;
 
+import java.awt.BDRootWindow;
 import java.awt.Component;
-
-import javax.awt.BDRootWindow;
 
 import org.havi.ui.HScene;
 

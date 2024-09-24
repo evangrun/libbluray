@@ -95,7 +95,7 @@ public abstract class BDHandler implements Player, ServiceContentHandler {
     }
 
     public abstract void setSource(DataSource source)
-                throws IncompatibleSourceException;
+                throws IOException, IncompatibleSourceException;
 
     public int getState() {
         synchronized (this) {

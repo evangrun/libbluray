@@ -19,7 +19,7 @@
 
 package org.havi.ui;
 
-import java.awt.Component;		
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -37,11 +37,9 @@ import org.havi.ui.event.HEventGroup;
 import org.videolan.BDJXletContext;
 import org.videolan.GUIManager;
 import org.videolan.Logger;
+import java.awt.BDToolkit;
 
-import javax.awt.BDToolkit;
 
-// 	this is created by the HSceneFactory.
-//	it is called when an xlet starts
 public class HScene extends Container implements HComponentOrdering {
     protected HScene() {
         context = BDJXletContext.getCurrentContext();
@@ -56,9 +54,7 @@ public class HScene extends Container implements HComponentOrdering {
     }
 
     public void paint(Graphics g) {
-        org.videolan.Logger.unimplemented("HScene", "paint()");
-
-    	if (backgroundMode == BACKGROUND_FILL) {
+        if (backgroundMode == BACKGROUND_FILL) {
             g.setColor(getBackground());
             g.fillRect(super.getX(), super.getY(), super.getWidth(), super.getHeight());
         }
@@ -156,7 +152,6 @@ public class HScene extends Container implements HComponentOrdering {
     }
 
     public boolean push(Component component) {
-        org.videolan.Logger.unimplemented("HScene", "push()");
         int index = getComponentZOrder(component);
         if (index < 0)
             return false;
@@ -253,9 +248,9 @@ public class HScene extends Container implements HComponentOrdering {
         }
     }
 
-    // called by HSceneFactory
     protected void disposeImpl()
     {
+        // called by HSceneFactory
         try {
             removeAll();
 
@@ -370,7 +365,6 @@ public class HScene extends Container implements HComponentOrdering {
     }
 
     public void setActive(boolean focus) {
-        org.videolan.Logger.unimplemented("HScene", "setActive()");
         if (active == true && focus == false)
             dispatchEvent(new WindowEvent(GUIManager.getInstance(),
                     WindowEvent.WINDOW_DEACTIVATED));
@@ -387,13 +381,8 @@ public class HScene extends Container implements HComponentOrdering {
     }
 
     public void setVisible(boolean visible) {
-    	if(visible)
-    		org.videolan.Logger.unimplemented("HScene", "setVisible() to true");
-    	else
-    		org.videolan.Logger.unimplemented("HScene", "setVisible() to false");
-
-    	//	always call super!
-    	//	we need to start events
+        if (visible == isVisible())
+            return;
         super.setVisible(visible);
 
         /*

@@ -19,7 +19,6 @@
 
 package javax.media;
 
-import java.awt.*;
 import java.awt.Component;
 
 public interface Player extends MediaHandler, Controller, Duration {

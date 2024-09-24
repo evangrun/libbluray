@@ -19,10 +19,10 @@
 
 package org.videolan;
 
-import java.io.File;	
+import java.io.File;
 import java.io.IOException;
 
-import javax.io.BDFileSystem;
+import java.io.BDFileSystem;
 
 class CacheDir {
 
@@ -45,7 +45,7 @@ class CacheDir {
 
     private static void cleanupCache() throws IOException {
         InitializeBaseDir();
-        String[] files = javax.io.BDFileSystem.nativeList(baseDir);
+        String[] files = BDFileSystem.nativeList(baseDir);
         if (files != null) {
             for (int i = 0; i < files.length; i++) {
                 File dir = new File(baseDir, files[i]);
@@ -121,7 +121,7 @@ class CacheDir {
     }
 
     private static void removeImpl(File dir) {
-        String[] files = javax.io.BDFileSystem.nativeList(dir);
+        String[] files = BDFileSystem.nativeList(dir);
         if (files != null) {
             for (int i = 0; i < files.length; i++) {
                 File file = new File(dir, files[i]);

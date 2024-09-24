@@ -28,7 +28,6 @@ import java.awt.Dimension;
 import org.videolan.GUIManager;
 import org.videolan.Logger;
 
-//created by HScreen
 public class HGraphicsDevice extends HScreenDevice {
     protected HGraphicsDevice() {
         boolean is_p6 = isProfile6();
@@ -84,14 +83,13 @@ public class HGraphicsDevice extends HScreenDevice {
     public boolean setGraphicsConfiguration(HGraphicsConfiguration hgc)
             throws SecurityException, HPermissionDeniedException,
             HConfigurationException {
-            
+
+        logger.unimplemented("setGraphicsConfiguration");
+
         GUIManager mgr = GUIManager.getInstance();
         Dimension d = hgc.getPixelResolution();
         int curWidth = mgr.getWidth();
         int curHeight = mgr.getHeight();
-
-        logger.info("Request to switch graphics resolution from " + curWidth + "x" + curHeight +
-                " to " + d.width + "x" + d.height);
 
         if (curWidth != d.width || curHeight != d.height) {
             logger.info("Request to switch graphics resolution from " + curWidth + "x" + curHeight +

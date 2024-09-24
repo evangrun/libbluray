@@ -20,14 +20,11 @@
 
 package org.dvb.ui;
 
-import java.awt.Font;	
-
+import java.awt.Font;
 import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
-
 import java.net.URL;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,8 +49,6 @@ public class FontFactory {
 
     private static void readDiscFonts() throws FontFormatException, IOException {
         synchronized (fontsLock) {
-
-            org.videolan.Logger.unimplemented("readDiscFonts", "readDiscFonts()");
 
         if (fonts != null)
             return;

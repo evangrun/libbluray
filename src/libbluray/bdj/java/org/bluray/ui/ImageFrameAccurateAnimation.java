@@ -20,18 +20,17 @@
 
 package org.bluray.ui;
 
-import java.awt.Dimension;		
+import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
 
-import javax.awt.BDWindowGraphics;
-
 import java.lang.InterruptedException;
 import java.lang.Thread;
+
+import java.awt.BDWindowGraphics;
 
 import org.videolan.GUIManager;
 import org.videolan.Logger;
@@ -202,7 +201,7 @@ public class ImageFrameAccurateAnimation extends FrameAccurateAnimation
             while (!ready) {
 
                 // paint image
-                Graphics2D g = new BDWindowGraphics(GUIManager.getInstance());
+                Graphics g = new BDWindowGraphics(GUIManager.getInstance());
                 faa.paint(g);
                 g.dispose();
 
@@ -218,7 +217,7 @@ public class ImageFrameAccurateAnimation extends FrameAccurateAnimation
                         return;
                     }
                 }
- 
+
                 // next image index
                 int position = faa.position + increment;
                 if (position >= faa.images.length) {

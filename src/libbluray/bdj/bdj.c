@@ -52,6 +52,7 @@
 #endif
 
 #define BDJ_JARFILE         "libbluray.jar"
+#define BDJ_JARFILE_AWT     "libbluray-awt.jar"
 
 struct bdjava_s {
 #if defined(__APPLE__)
@@ -515,7 +516,9 @@ void bdj_config_cleanup(BDJ_CONFIG *p)
     X_FREE(p->cache_root);
     X_FREE(p->persistent_root);
     X_FREE(p->java_home);
-    X_FREE(p->classpath);
+    X_FREE(p->classpath[0]);
+    X_FREE(p->classpath[1]);
+
 }
 
 static char * _find_libbluray_jar()
@@ -550,16 +553,54 @@ static char * _find_libbluray_jar()
     return NULL;
 }
 
+static char* _find_libbluray_awt_jar()
+{
+    unsigned i;
+
+    // check directory where libbluray.so was loaded from
+    const char* lib_path = dl_get_path();
+    if (lib_path)
+    {
+        for (i = 0; i < 2; i++)
+        {
+            const char* relinstalldir[2] = { "",
+                                              "java" DIR_SEP };
+            char* cp = str_printf("%s%s%s", lib_path, relinstalldir[i], BDJ_JARFILE_AWT);
+            if (!cp)
+            {
+                BD_DEBUG(DBG_CRIT, "out of memory\n");
+                return NULL;
+            }
+
+            BD_DEBUG(DBG_BDJ, "Checking %s ...\n", cp);
+            if (_can_read_file(cp))
+            {
+                BD_DEBUG(DBG_BDJ, "using %s\n", cp);
+                return cp;
+            }
+            X_FREE(cp);
+        }
+    }
+    BD_DEBUG(DBG_BDJ | DBG_CRIT, BDJ_JARFILE_AWT" not found.\n");
+    return NULL;
+}
+
 static int find_libbluray_jar(BDJ_CONFIG *storage)
 {
-    if (!storage->classpath) 
+    if (!storage->classpath[0])
     {
-        storage->classpath = _find_libbluray_jar();
-        if (!storage->classpath)
+        storage->classpath[0] = _find_libbluray_jar();
+        if (!storage->classpath[0])
+            return 0;
+    }
+    if (!storage->classpath[1])
+    {
+        storage->classpath[1] = _find_libbluray_awt_jar();
+        if (!storage->classpath[1])
             return 0;
     }
 
-    return !!storage->classpath;
+    return !!storage->classpath[0] && !!storage->classpath[1];
 }
 
 static const char *_bdj_persistent_root(BDJ_CONFIG *storage)
@@ -838,45 +879,58 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
     if (java_9) {
         BD_DEBUG(DBG_BDJ, "Detected Java 9 or later JVM\n");
     }
+    else {
+        BD_DEBUG(DBG_BDJ, "Pre-Java 9 JVM\n");
+    }
 
     //  add base
     memset(option, 0, sizeof(option));
-    //  add our classpath
-    option[n++].optionString = str_printf("-Djava.class.path=%s", cfg->classpath);
 
-    //  patch java base for our code 
-    option[n++].optionString = str_printf("--patch-module=java.base=%s", cfg->classpath);
-    //  add that we will use the java.desktop packages
-    option[n++].optionString = str_dup("--add-reads=java.base=java.desktop");
-    //  we run with graphics
-    option[n++].optionString = str_dup("-Djava.awt.headless=false");
-    // AWT needs to access logger and Xlet context 
-    option[n++].optionString = str_dup("--add-opens=java.base/org.videolan=java.desktop");
-    // AWT needs to acess DVBGraphics 
-    option[n++].optionString = str_dup("--add-exports=java.base/org.dvb.ui=java.desktop");
-    //  set the graphics environment to us
-    option[n++].optionString = str_dup("-Djava.awt.graphicsenv=java.awt.BDGraphicsEnvironment");
-    //  set the toolkit to use (our runtime environment)
+    //  export toolkit
     option[n++].optionString = str_dup("-Dawt.toolkit=java.awt.BDToolkit");
-    // org.videolan.IxcRegistryImpl -> java.rmi.Remote 
-    option[n++].optionString = str_dup("--add-reads=java.base=java.rmi");
-    // org.videolan.FontIndex -> java.xml. 
-    option[n++].optionString = str_dup("--add-reads=java.base=java.xml");
-    //  we all need access to the hidden packages from sun
-    //  see also: https://stackoverflow.com/questions/53801778/is-sun-awt-image-package-deprecated
-    option[n++].optionString = str_dup("--add-exports=java.desktop/sun.awt.image=java.base");
-    //  add sun.net for URL stuff
-    option[n++].optionString = str_dup("--add-exports=java.base/sun.net.util=java.base");
+    option[n++].optionString = str_dup("-Djava.awt.graphicsenv=java.awt.BDGraphicsEnvironment");
+    option[n++].optionString = str_dup("-Djava.awt.headless=false");
 
     //  set the heap sizes?
-//    option[n++].optionString = str_dup   ("-Xms256M");
-//    option[n++].optionString = str_dup   ("-Xmx256M");
+    //    option[n++].optionString = str_dup   ("-Xms256M");
+    //    option[n++].optionString = str_dup   ("-Xmx256M");
     //  set the maximum stack
-//    option[n++].optionString = str_dup   ("-Xss2048k");
+    //    option[n++].optionString = str_dup   ("-Xss2048k");
 
-    // Export BluRay packages to Xlets 
-    for (size_t idx = 0; idx < num_java_base_exports; idx++) {
-        option[n++].optionString = str_printf("--add-exports=java.base/%s=ALL-UNNAMED", java_base_exports[idx]);
+    if (!java_9) {
+        option[n++].optionString = str_dup("-Djavax.accessibility.assistive_technologies= ");
+        option[n++].optionString = str_printf("-Xbootclasspath/p:" "%s;%s", cfg->classpath[0], cfg->classpath[1]);
+    }
+    else {
+        //  add our class directly into the main desktop
+        option[n++].optionString = str_printf("--patch-module=java.base=%s", cfg->classpath[0]);
+        option[n++].optionString = str_printf("--patch-module=java.desktop=%s", cfg->classpath[1]);
+        //  fix modules
+        option[n++].optionString = str_dup("--add-reads=java.base=java.desktop");
+        /* org.videolan.IxcRegistryImpl -> java.rmi.Remote */
+        option[n++].optionString = str_dup("--add-reads=java.base=java.rmi");
+        /* org.videolan.FontIndex -> java.xml. */
+        option[n++].optionString = str_dup("--add-reads=java.base=java.xml");
+        /* AWT needs to access logger and Xlet context */
+        option[n++].optionString = str_dup("--add-opens=java.base/org.videolan=java.desktop");
+        /* AWT needs to acess DVBGraphics */
+        option[n++].optionString = str_dup("--add-exports=java.base/org.dvb.ui=java.desktop");
+        /* org.havi.ui.HBackgroundImage needs to access sun.awt.image.FileImageSource */
+        option[n++].optionString = str_dup("--add-exports=java.desktop/sun.awt.image=java.base");
+        //  see also https://stackoverflow.com/questions/56039341/get-declared-fields-of-java-lang-reflect-fields-in-jdk12/71465198#71465198
+//      option[n++].optionString = str_dup("--add-opens=java.base/java.io=ALL-UNNAMED");
+//      option[n++].optionString = str_dup("--add-opens=java.base/java.lang=ALL-UNNAMED");
+//      option[n++].optionString = str_dup("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED");
+        //  we all need access to the hidden packages from sun
+        //  see also: https://stackoverflow.com/questions/53801778/is-sun-awt-image-package-deprecated
+//      option[n++].optionString = str_dup("--add-exports=java.desktop/sun.awt.image=java.base");
+    //  add sun.net for URL stuff
+//      option[n++].optionString = str_dup("--add-exports=java.base/sun.net.util=java.base");
+
+        // Export BluRay packages to Xlets 
+        for (size_t idx = 0; idx < num_java_base_exports; idx++) {
+            option[n++].optionString = str_printf("--add-exports=java.base/%s=ALL-UNNAMED", java_base_exports[idx]);
+        }
     }
 
     /* JVM debug options */
@@ -886,7 +940,7 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
     }
 
     //  allow for remote debugging
-    //if (getenv("BDJ_JVM_DEBUG")) 
+    if (getenv("BDJ_JVM_DEBUG")) 
     {
         BD_DEBUG(DBG_CRIT | DBG_BDJ, "Enabling BD-J debug mode\n");
         //option[n++].optionString = str_dup("-verbose:class,gc,jni");
@@ -894,7 +948,7 @@ static int create_jvm(void *jvm_lib, const char *java_home, BDJ_CONFIG *cfg, JNI
     }
 
     //  set version
-    args.version = JNI_VERSION_1_8;
+    args.version = JNI_VERSION_1_4;
     //  set options
     args.nOptions = n;
     args.options = option;
@@ -1001,11 +1055,9 @@ BDJAVA* bdj_open(const char *path, struct bluray *bd,
     bdjava->jvm = jvm;
 
     //  log
-    if (debug_mask & DBG_JNI) 
-    {
-        int version = (int)(*env)->GetVersion(env);
-        BD_DEBUG(DBG_BDJ, "Java JNI version: %d.%d\n", version >> 16, version & 0xffff);
-    }
+    int version = (int)(*env)->GetVersion(env);
+    BD_DEBUG(DBG_BDJ, "Java JNI version: %d.%d\n", version >> 16, version & 0xffff);
+
     //  init
     if (!_bdj_init(env, bd, path, bdj_disc_id, cfg)) 
     {
