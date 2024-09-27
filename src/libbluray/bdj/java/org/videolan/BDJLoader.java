@@ -208,10 +208,10 @@ public class BDJLoader {
                     if (id.equals(appTable[i].getIdentifier()) &&
                         entry.getInitialClass().equals(appTable[i].getInitialClass())) {
                         if (restart && appTable[i].getIsServiceBound()) {
-                            logger.info("Stopping xlet " + appTable[i].getInitialClass() + " (for restart)");
+//                            logger.info("Stopping xlet " + appTable[i].getInitialClass() + " (for restart)");
                             proxy.stop(true);
                         } else {
-                            logger.info("Keeping xlet " + appTable[i].getInitialClass());
+//                            logger.info("Keeping xlet " + appTable[i].getInitialClass());
                             proxys[i] = proxy;
                             proxy = null;
                         }
@@ -219,7 +219,7 @@ public class BDJLoader {
                     }
                 }
                 if (proxy != null) {
-                    logger.info("Terminating xlet " + entry.getInitialClass());
+//                    logger.info("Terminating xlet " + entry.getInitialClass());
                     proxy.release();
                 }
             }
@@ -260,10 +260,10 @@ public class BDJLoader {
                     if (params != null && params.length > 0) {
                         p = "(" + StrUtil.Join(params, ",") + ")";
                     }
-                    logger.info("Loaded class: " + appTable[i].getInitialClass() + p + " from " + appTable[i].getBasePath() + ".jar");
+//                    logger.info("Loaded class: " + appTable[i].getInitialClass() + p + " from " + appTable[i].getBasePath() + ".jar");
                 } else {
                     proxys[i].getXletContext().update(appTable[i], bdjo.getAppCaches());
-                    logger.info("Reused class: " + appTable[i].getInitialClass() +     " from " + appTable[i].getBasePath() + ".jar");
+//                    logger.info("Reused class: " + appTable[i].getInitialClass() +     " from " + appTable[i].getBasePath() + ".jar");
                 }
             }
 
@@ -290,17 +290,17 @@ public class BDJLoader {
             for (int i = 0; i < appTable.length; i++) {
                 int code = appTable[i].getControlCode();
                 if (code == AppEntry.AUTOSTART) {
-                    logger.info("Autostart xlet " + i + ": " + appTable[i].getInitialClass());
+//                    logger.info("Autostart xlet " + i + ": " + appTable[i].getInitialClass());
                     proxys[i].start();
                 } else if (code == AppEntry.PRESENT) {
-                    logger.info("Init xlet " + i + ": " + appTable[i].getInitialClass());
+//                    logger.info("Init xlet " + i + ": " + appTable[i].getInitialClass());
                     proxys[i].init();
                 } else {
-                    logger.info("Unsupported xlet code (" +code+") xlet " + i + ": " + appTable[i].getInitialClass());
+//                    logger.info("Unsupported xlet code (" +code+") xlet " + i + ": " + appTable[i].getInitialClass());
                 }
             }
 
-            logger.info("Finished initializing and starting xlets.");
+//            logger.info("Finished initializing and starting xlets.");
 
             return true;
 

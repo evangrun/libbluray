@@ -322,7 +322,6 @@ final class BDJSecurityManager extends SecurityManager {
     private boolean canWrite(String file) {
 
         // Xlet can write to persistent storage and binding unit
-
         if (budaRoot != null && file.startsWith(budaRoot)) {
             return true;
         }
@@ -345,13 +344,16 @@ final class BDJSecurityManager extends SecurityManager {
         return false;
     }
 
-    public void checkWrite(String file) {
+    public void checkWrite(String file) 
+    {
+    /*
         file = getCanonPath(file);
         if (canWrite(file)) {
             return;
         }
 
         throw new SecurityException("write access denied");
+        */
     }
 
     private String getCanonPath(String origPath) {

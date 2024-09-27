@@ -53,25 +53,34 @@ public class HScene extends Container implements HComponentOrdering {
         return context;
     }
 
-    public void paint(Graphics g) {
-        if (backgroundMode == BACKGROUND_FILL) {
+    public void paint(Graphics g) 
+    {
+        logger.info("***************** HScene paint");
+
+        if (backgroundMode == BACKGROUND_FILL) 
+        {
             g.setColor(getBackground());
             g.fillRect(super.getX(), super.getY(), super.getWidth(), super.getHeight());
         }
 
-        if (image != null) {
-            switch (imageMode) {
-            case IMAGE_CENTER:
-                g.drawImage(image, (super.getWidth() - image.getWidth(null)) / 2,
-                        (super.getHeight() - image.getHeight(null)) / 2, null);
+        if (image != null) 
+        {
+            switch (imageMode) 
+            {
+                case IMAGE_CENTER:
+                    g.drawImage(image, (super.getWidth() - image.getWidth(null)) / 2,
+                                        (super.getHeight() - image.getHeight(null)) / 2, null);
                 break;
-            case IMAGE_STRETCH:
-                g.drawImage(image, super.getX(), super.getY(), super.getWidth(), super.getHeight(), null);
+                case IMAGE_STRETCH:
+                    g.drawImage(image, super.getX(), super.getY(), super.getWidth(), super.getHeight(), null);
                 break;
-            case IMAGE_TILE:
-                for (int x = super.getX(); x < super.getWidth(); x += image.getWidth(null))
-                    for (int y = super.getY(); y < super.getHeight(); y += image.getHeight(null))
-                        g.drawImage(image, x, y, null);
+                case IMAGE_TILE:
+                    for (int x = super.getX(); x < super.getWidth(); x += image.getWidth(null))
+                        for (int y = super.getY(); y < super.getHeight(); y += image.getHeight(null))
+                            g.drawImage(image, x, y, null);
+                break;
+                default:
+                    logger.error("HScene::paint: unknown mode " + imageMode);
                 break;
             }
         }
@@ -191,39 +200,43 @@ public class HScene extends Container implements HComponentOrdering {
         windowListener = HEventMulticaster.remove(windowListener, listener);
     }
 
-    protected void processWindowEvent(WindowEvent event) {
-        if (windowListener != null) {
-            switch (event.getID()) {
-            case WindowEvent.WINDOW_OPENED:
-                windowListener.windowOpened(event);
+    protected void processWindowEvent(WindowEvent event) 
+    {
+        if (windowListener != null) 
+        {
+            switch (event.getID()) 
+            {
+                case WindowEvent.WINDOW_OPENED:
+                    windowListener.windowOpened(event);
                 break;
-            case WindowEvent.WINDOW_CLOSING:
-                windowListener.windowClosing(event);
+                case WindowEvent.WINDOW_CLOSING:
+                    windowListener.windowClosing(event);
                 break;
-            case WindowEvent.WINDOW_CLOSED:
-                windowListener.windowClosed(event);
+                case WindowEvent.WINDOW_CLOSED:
+                    windowListener.windowClosed(event);
                 break;
-            case WindowEvent.WINDOW_ICONIFIED:
-                windowListener.windowIconified(event);
+                case WindowEvent.WINDOW_ICONIFIED:
+                    windowListener.windowIconified(event);
                 break;
-            case WindowEvent.WINDOW_DEICONIFIED:
-                windowListener.windowDeiconified(event);
+                case WindowEvent.WINDOW_DEICONIFIED:
+                    windowListener.windowDeiconified(event);
                 break;
-            case WindowEvent.WINDOW_ACTIVATED:
-                windowListener.windowActivated(event);
+                case WindowEvent.WINDOW_ACTIVATED:
+                    windowListener.windowActivated(event);
                 break;
-            case WindowEvent.WINDOW_DEACTIVATED:
-                windowListener.windowDeactivated(event);
+                case WindowEvent.WINDOW_DEACTIVATED:
+                    windowListener.windowDeactivated(event);
                 break;
             }
         }
 
-        switch (event.getID()) {
-        case WindowEvent.WINDOW_ACTIVATED:
-            active = true;
+        switch (event.getID()) 
+        {
+            case WindowEvent.WINDOW_ACTIVATED:
+                active = true;
             break;
-        case WindowEvent.WINDOW_DEACTIVATED:
-            active = false;
+            case WindowEvent.WINDOW_DEACTIVATED:
+                active = false;
             break;
         }
     }
@@ -242,6 +255,7 @@ public class HScene extends Container implements HComponentOrdering {
     }
 
     public synchronized void dispose() {
+
         HSceneFactory sf = HSceneFactory.getInstance();
         if (sf != null) {
             sf.dispose(this);
@@ -250,7 +264,6 @@ public class HScene extends Container implements HComponentOrdering {
 
     protected void disposeImpl()
     {
-        // called by HSceneFactory
         try {
             removeAll();
 
@@ -381,6 +394,7 @@ public class HScene extends Container implements HComponentOrdering {
     }
 
     public void setVisible(boolean visible) {
+
         if (visible == isVisible())
             return;
         super.setVisible(visible);

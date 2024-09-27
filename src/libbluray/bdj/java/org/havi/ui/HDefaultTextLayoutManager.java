@@ -95,7 +95,8 @@ public class HDefaultTextLayoutManager implements HTextLayoutManager {
 
         int x = 0;
         int y = 0;
-        for (int i = 0; i < lines.length; i++) {
+        for (int i = 0; i < lines.length; i++) 
+        {
             int lineWidth = fontMetrics.stringWidth(lines[i]);
 
             switch (v.getHorizontalAlignment()) {
@@ -111,20 +112,19 @@ public class HDefaultTextLayoutManager implements HTextLayoutManager {
                     break;
             }
 
-            switch (v.getVerticalAlignment()) {
-
-            case HVisible.VALIGN_TOP:
-                y = insets.top + ascent + descent + i * stringHeight;
+            switch (v.getVerticalAlignment()) 
+            {
+                case HVisible.VALIGN_TOP:
+                    y = insets.top + ascent + descent + i * stringHeight;
                 break;
-            case HVisible.VALIGN_BOTTOM:
-                y = v.getHeight() - insets.bottom - textHeight +
-                    ascent + descent + i * stringHeight;
+                case HVisible.VALIGN_BOTTOM:
+                    y = v.getHeight() - insets.bottom - textHeight + ascent + descent + i * stringHeight;
                 break;
-            case HVisible.VALIGN_CENTER:
-            case HVisible.VALIGN_JUSTIFY:
-                y = insets.top +
-                    (v.getHeight() - insets.top - insets.bottom - textHeight) / 2 +
-                    ascent + descent + i * stringHeight;
+                case HVisible.VALIGN_CENTER:
+                case HVisible.VALIGN_JUSTIFY:
+                    y = insets.top +
+                        (v.getHeight() - insets.top - insets.bottom - textHeight) / 2 +
+                        ascent + descent + i * stringHeight;
                 break;
             }
 

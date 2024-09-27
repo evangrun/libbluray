@@ -74,7 +74,7 @@ class BDJSocketFactory implements SocketImplFactory {
         SocketImpl socket = newSocket();
         BDJXletContext ctx = BDJXletContext.getCurrentContext();
         if (ctx != null) {
-            logger.info("Xlet " + ctx + " created new socket");
+//            logger.info("Xlet " + ctx + " created new socket");
             ctx.addSocket(socket);
         } else {
             logger.error("New socket created outside of Xlet context: " + Logger.dumpStack());

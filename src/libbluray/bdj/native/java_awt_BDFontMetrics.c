@@ -17,9 +17,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#if HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <jni.h>
 
@@ -34,7 +32,7 @@
 #endif
 
 #ifdef HAVE_FONTCONFIG
-#include "util/strutl.h"
+#include "util/strutl.h" 
 #include <fontconfig/fontconfig.h>
 #endif
 

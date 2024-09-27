@@ -18,9 +18,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#if HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "bdjo.h"
 #include "util.h"
@@ -611,7 +609,7 @@ JNIEXPORT void JNICALL Java_org_videolan_Libbluray_updateGraphicN(JNIEnv * env,
 
     BLURAY* bd = (BLURAY*)(intptr_t)np;
 
-    BD_DEBUG(DBG_JNI, "updateGraphicN(%ld,%ld-%ld,%ld)\n", (long)x0, (long)y0, (long)x1, (long)y1);
+    BD_DEBUG(DBG_JNI, "updateGraphicN(%ld,%ld,%ld,%ld)\n", (long)x0, (long)y0, (long)x1, (long)y1);
 
     /* app callback not initialized ? */
     if (!bd) {

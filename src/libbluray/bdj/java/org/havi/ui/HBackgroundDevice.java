@@ -80,7 +80,6 @@ public class HBackgroundDevice extends HScreenDevice {
     public boolean setBackgroundConfiguration(HBackgroundConfiguration hbc)
             throws SecurityException, HPermissionDeniedException,
             HConfigurationException {
-        org.videolan.Logger.unimplemented("HBackgroundDevide", "setBackgroundConfiguration()");
         this.hbc = hbc;
         return true;
     }

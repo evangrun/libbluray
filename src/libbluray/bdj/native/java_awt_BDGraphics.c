@@ -17,9 +17,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#if HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "util/logging.h"
 
@@ -47,7 +45,6 @@
 JNIEXPORT void JNICALL
 Java_java_awtx_BDGraphics_drawStringN(JNIEnv * env, jobject obj, jlong ftFace, jstring string, jint x, jint y, jint rgb)
 {
-#ifdef HAVE_FT2
     jsize length;
     const jchar *chars;
     jclass cls;
@@ -57,15 +54,23 @@ Java_java_awtx_BDGraphics_drawStringN(JNIEnv * env, jobject obj, jlong ftFace, j
     unsigned j, k;
     FT_Face face = (FT_Face)(intptr_t)ftFace;
 
-    if (!face)
+    BD_DEBUG(DBG_JNI, "Drawing text\n");
+
+    if (!face) {
+        BD_DEBUG(DBG_BDJ | DBG_CRIT, "Asking to draw with an unknown font\n");
         return;
+    }
 
     length = (*env)->GetStringLength(env, string);
-    if (length <= 0)
-      return;
+    if (length <= 0) {
+        BD_DEBUG(DBG_BDJ | DBG_CRIT, "0 length string in inBDGraphics_drawString\n");
+        return;
+    }
     chars = (*env)->GetStringCritical(env, string, NULL);
-    if (chars == NULL)
-      return;
+    if (chars == NULL) {
+        BD_DEBUG(DBG_BDJ | DBG_CRIT, "String not found inBDGraphics_drawString\n");
+        return;
+    }
 
     cls = (*env)->GetObjectClass(env, obj);
     mid = (*env)->GetMethodID(env, cls, "drawPoint", "(III)V");
@@ -91,7 +96,6 @@ Java_java_awtx_BDGraphics_drawStringN(JNIEnv * env, jobject obj, jlong ftFace, j
     }
 
     (*env)->ReleaseStringCritical(env, string, chars);
-#endif /* HAVE_FT2 */
 }
 
 #define CC (char*)(uintptr_t)  /* cast a literal from (const char*) */

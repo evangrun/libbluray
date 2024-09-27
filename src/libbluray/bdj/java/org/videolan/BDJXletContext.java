@@ -91,8 +91,7 @@ public class BDJXletContext implements javax.tv.xlet.XletContext, javax.microedi
                 homeMountPoint = homeMountPoint + java.io.File.separator;
             }
             time = System.currentTimeMillis() - time;
-            logger.info("Mounted Xlet home directory from " + home + ".jar " +
-                        "to " + homeMountPoint + "(" + time + "ms)");
+//            logger.info("Mounted Xlet home directory from " + home + ".jar " + "to " + homeMountPoint + "(" + time + "ms)");
         } catch (Exception ex) {
             logger.error("Failed mounting " + home + ".jar:" + ex);
         }

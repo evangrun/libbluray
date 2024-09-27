@@ -82,10 +82,8 @@ public class HGraphicsDevice extends HScreenDevice {
 
     public boolean setGraphicsConfiguration(HGraphicsConfiguration hgc)
             throws SecurityException, HPermissionDeniedException,
-            HConfigurationException {
-
-        logger.unimplemented("setGraphicsConfiguration");
-
+            HConfigurationException 
+    {
         GUIManager mgr = GUIManager.getInstance();
         Dimension d = hgc.getPixelResolution();
         int curWidth = mgr.getWidth();

@@ -99,7 +99,7 @@ public class Logger {
         logN(error, cls, 0, msg);
     }
 
-    private static void log(boolean error, String msg) {
+    public static void log(boolean error, String msg) {
         Location l = getLocation(3);
         logN(error, l.file + ":" + l.cls + "." + l.func, l.line, msg);
     }

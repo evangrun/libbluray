@@ -73,7 +73,7 @@ typedef struct {
     uint64_t       clip_block_pos;
     uint64_t       clip_pos;
 
-    /* current aligned unit */
+    /* current aligned unit == offset within a 6144 block */
     uint16_t       int_buf_off;
 
     /* current stream UO mask (combined from playlist and current clip UO masks) */
@@ -1355,9 +1355,13 @@ void bd_bdj_osd_cb(BLURAY *bd, const unsigned *img, int w, int h,
         return;
     }
 
+    //  clear
     memset(&aov, 0, sizeof(aov));
     aov.pts   = -1;
     aov.plane = BD_OVERLAY_IG;
+
+    //  get time from clip
+    aov.pts = bd_tell_time(bd);
 
     /* no image data -> init or close */
     if (!img) {

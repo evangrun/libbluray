@@ -104,7 +104,7 @@ class VFSCache {
             logger.error("Error caching to " + dstPath + ": " + exception);
             if (outStream != null)
                 if (!(new File(dstPath).delete()))
-                    logger.info("Error removing " + dstPath);
+                    logger.error("Error removing " + dstPath);
             return false;
         }
 
@@ -353,7 +353,7 @@ class VFSCache {
             }
         }
 
-        logger.info("using cached " + cachePath);
+//        logger.info("using cached " + cachePath);
         return cachePath;
     }
 

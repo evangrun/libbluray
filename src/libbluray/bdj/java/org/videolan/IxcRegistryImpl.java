@@ -370,8 +370,8 @@ public class IxcRegistryImpl {
      * debug
      */
 
-    private static final boolean DEBUG = true;
-    private static final boolean TRACE = true;
+    private static final boolean DEBUG = false;
+    private static final boolean TRACE = false;
     private static final Logger logger = Logger.getLogger(IxcRegistryImpl.class.getName());
 
     private static void Debug(String s) {
