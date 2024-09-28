@@ -346,14 +346,12 @@ final class BDJSecurityManager extends SecurityManager {
 
     public void checkWrite(String file) 
     {
-    /*
         file = getCanonPath(file);
         if (canWrite(file)) {
             return;
         }
 
         throw new SecurityException("write access denied");
-        */
     }
 
     private String getCanonPath(String origPath) {
