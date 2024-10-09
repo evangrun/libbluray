@@ -129,15 +129,6 @@ public abstract class BDHandler implements Player, ServiceContentHandler {
         }
     }
 
-    public GainControl getGainControl() {
-        checkUnrealized();
-        for (int i = 0; i < controls.length; i++) {
-            if (controls[i] instanceof OverallGainControl)
-                return (GainControl)controls[i];
-        }
-        return null;
-    }
-
     public void addController(Controller newController) throws IncompatibleTimeBaseException {
         checkUnrealized();
     }
@@ -257,9 +248,23 @@ public abstract class BDHandler implements Player, ServiceContentHandler {
     public static final int GAIN_OVERALL = 1;
     public static final int GAIN_PRIMARY = 2;
     public static final int GAIN_SECONDARY = 3;
+    public GainControl getGainControl() {
+        checkUnrealized();
+        for (int i = 0; i < controls.length; i++) {
+            if (controls[i] instanceof OverallGainControl)
+                return (GainControl)controls[i];
+        }
+        return null;
+    }
 
+    //  implement this more (on GainControl?)
+    public static int current_mixer = 0;
+    public static boolean current_mute = false;
+    public static float current_level = 1;
     public void setGain(int mixer, boolean mute, float level) {
-        Logger.unimplemented("BDHandler", "setGain");
+        current_mixer = mixer;
+        current_mute = mute;
+        current_level = level;
     }
 
     public void setPanning(float x, float y) {

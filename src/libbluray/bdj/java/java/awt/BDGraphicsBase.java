@@ -377,7 +377,7 @@ abstract class BDGraphicsBase extends DVBGraphics implements ConstrainableGraphi
         rect = actualClip.intersection(rect);
 
         if (rect.width <= 0 || rect.height <= 0 || rect.x < 0 || rect.y < 0 || backBuffer == null) {
-            logger.error("drawSpanN removed after clip");
+//            logger.error("drawSpanN removed after clip");
             return;
         }
 
