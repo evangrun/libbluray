@@ -56,6 +56,16 @@ typedef struct bluray BLURAY;
 #define BD_AACS_CERT_REVOKED    -5  /**< All certificates have been revoked   */
 #define BD_AACS_MMC_FAILED      -6  /**< MMC (disc drive interaction) failed  */
 
+typedef struct {
+    //  DURATION OF CLIP
+    uint32_t    m_duration;
+    //  IN AND OUT TIME
+    uint32_t    m_in_time;
+    uint32_t    m_out_time;
+    //  CURRENT OFFSET TIM
+    uint32_t    m_title_time;
+} BD_clip_info;
+
 /** HDMV / BD-J title information */
 typedef struct {
     const char *name;         /**< optional title name in preferred language */
@@ -519,9 +529,10 @@ uint32_t bd_get_current_title(BLURAY *bd);
  * @param bd  BLURAY object
  * @param buf buffer to read data into
  * @param len size of data to be read
+*  @param  returns the start time of the current clip, in 45kHz
  * @return size of data read, -1 if error, 0 if EOF
  */
-int bd_read(BLURAY *bd, unsigned char *buf, int len);
+int bd_read(BLURAY *bd, unsigned char *buf, int len, BD_clip_info* clipintime);
 
 
 /*
@@ -1010,7 +1021,7 @@ int  bd_menu_call(BLURAY *bd, int64_t pts);
  * @param event next BD_EVENT from event queue (BD_EVENT_NONE if no events)
  * @return size of data read, -1 if error, 0 if event needs to be handled first, 0 if end of title was reached
  */
-int  bd_read_ext(BLURAY *bd, unsigned char *buf, int len, BD_EVENT *event);
+int  bd_read_ext(BLURAY *bd, unsigned char *buf, int len, BD_clip_info* clipintime, BD_EVENT *event);
 
 /**
  *

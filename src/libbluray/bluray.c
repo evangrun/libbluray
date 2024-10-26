@@ -1737,14 +1737,14 @@ int64_t bd_seek_time(BLURAY *bd, uint64_t tick)
 
     bd_mutex_lock(&bd->mutex);
 
-    if (bd->title &&
-        tick < bd->title->duration) {
-
+    if (bd->title && tick < bd->title->duration) 
+    {
         _change_angle(bd);
 
         // Find the closest access unit to the requested position
         clip = nav_time_search(bd->title, (uint32_t)tick, &clip_pkt, &out_pkt);
 
+        //  and seek
         _seek_internal(bd, clip, out_pkt, clip_pkt);
 
     } else {
@@ -1786,14 +1786,14 @@ int64_t bd_seek_chapter(BLURAY *bd, unsigned chapter)
 
     bd_mutex_lock(&bd->mutex);
 
-    if (bd->title &&
-        chapter < bd->title->chap_list.count) {
+    if (bd->title && chapter < bd->title->chap_list.count) {
 
         _change_angle(bd);
 
         // Find the closest access unit to the requested position
         clip = nav_chapter_search(bd->title, chapter, &clip_pkt, &out_pkt);
 
+        //  seek
         _seek_internal(bd, clip, out_pkt, clip_pkt);
 
     } else {
@@ -1981,7 +1981,7 @@ static int64_t _clip_seek_time(BLURAY *bd, uint32_t tick)
     return bd->s_pos;
 }
 
-static int _bd_read(BLURAY *bd, unsigned char *buf, int len)
+static int _bd_read(BLURAY *bd, unsigned char *buf, int len, BD_clip_info* clipintime)
 {
     BD_STREAM *st = &bd->st0;
     int out_len = 0;
@@ -2014,6 +2014,7 @@ static int _bd_read(BLURAY *bd, unsigned char *buf, int len)
                     }
                 }
             }
+
             if (st->int_buf_off == 6144 || clip_pkt >= st->clip->end_pkt) {
 
                 // Do we need to get the next clip?
@@ -2056,7 +2057,7 @@ static int _bd_read(BLURAY *bd, unsigned char *buf, int len)
                     }
 
                 }
-
+                //  read a block of data
                 int r = _read_block(bd, st, bd->int_buf);
                 if (r > 0) {
 
@@ -2109,6 +2110,14 @@ static int _bd_read(BLURAY *bd, unsigned char *buf, int len)
                 size -= (new_clip_pkt - st->clip->end_pkt) * 192;
             }
 
+            //  store the clip time, needed for playback
+            if (clipintime) {
+                clipintime->m_duration = st->clip->duration;
+                clipintime->m_in_time = st->clip->in_time;
+                clipintime->m_out_time = st->clip->out_time;
+                clipintime->m_title_time = st->clip->title_time;
+            }
+
             /* copy chunk */
             memcpy(buf, bd->int_buf + st->int_buf_off, size);
             buf += size;
@@ -2123,7 +2132,7 @@ static int _bd_read(BLURAY *bd, unsigned char *buf, int len)
         return out_len;
 }
 
-static int _bd_read_locked(BLURAY *bd, unsigned char *buf, int len)
+static int _bd_read_locked(BLURAY *bd, unsigned char *buf, int len, BD_clip_info* clipintime)
 {
     BD_STREAM *st = &bd->st0;
     int r;
@@ -2143,7 +2152,7 @@ static int _bd_read_locked(BLURAY *bd, unsigned char *buf, int len)
 
     BD_DEBUG(DBG_STREAM, "Reading [%d bytes] at %" PRIu64 "...\n", len, bd->s_pos);
 
-    r = _bd_read(bd, buf, len);
+    r = _bd_read(bd, buf, len, clipintime);
 
     /* mark tracking */
     if (bd->next_mark >= 0 && bd->s_pos > bd->next_mark_pos) {
@@ -2153,12 +2162,12 @@ static int _bd_read_locked(BLURAY *bd, unsigned char *buf, int len)
     return r;
 }
 
-int bd_read(BLURAY *bd, unsigned char *buf, int len)
+int bd_read(BLURAY *bd, unsigned char *buf, int len, BD_clip_info* clipintime)
 {
     int result;
 
     bd_mutex_lock(&bd->mutex);
-    result = _bd_read_locked(bd, buf, len);
+    result = _bd_read_locked(bd, buf, len, clipintime);
     bd_mutex_unlock(&bd->mutex);
 
     return result;
@@ -3650,7 +3659,7 @@ static int _run_hdmv(BLURAY *bd)
     return 0;
 }
 
-static int _read_ext(BLURAY *bd, unsigned char *buf, int len, BD_EVENT *event)
+static int _read_ext(BLURAY *bd, unsigned char *buf, int len, BD_clip_info* clipintime, BD_EVENT *event)
 {
     /* first check if we had an event */
     if (_get_event(bd, event)) {
@@ -3712,7 +3721,7 @@ static int _read_ext(BLURAY *bd, unsigned char *buf, int len, BD_EVENT *event)
         }
     }
 
-    int bytes = _bd_read_locked(bd, buf, len);
+    int bytes = _bd_read_locked(bd, buf, len, clipintime);
     if (bytes == 0) {
 
         // if no next clip (=end of title), resume HDMV VM
@@ -3731,11 +3740,11 @@ static int _read_ext(BLURAY *bd, unsigned char *buf, int len, BD_EVENT *event)
     return bytes;
 }
 
-int bd_read_ext(BLURAY *bd, unsigned char *buf, int len, BD_EVENT *event)
+int bd_read_ext(BLURAY *bd, unsigned char *buf, int len, BD_clip_info* clipintime, BD_EVENT *event)
 {
     int ret;
     bd_mutex_lock(&bd->mutex);
-    ret = _read_ext(bd, buf, len, event);
+    ret = _read_ext(bd, buf, len, clipintime, event);
     bd_mutex_unlock(&bd->mutex);
     return ret;
 }

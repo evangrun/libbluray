@@ -844,7 +844,9 @@ const NAV_CLIP* nav_chapter_search(const NAV_TITLE *title, unsigned chapter,
         return clip;
     }
     clip = &title->clip_list.clip[title->chap_list.mark[chapter].clip_ref];
+    //  this gets the end
     *clip_pkt = title->chap_list.mark[chapter].clip_pkt;
+    //  offset
     *out_pkt = clip->title_pkt + *clip_pkt - clip->start_pkt;
     return clip;
 }

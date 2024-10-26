@@ -79,6 +79,7 @@ struct nav_clip_s
 
     // Title relative metrics
     uint32_t title_pkt;
+    //  the time of the current clip start, in 45 kHz
     uint32_t title_time;
 
     NAV_TITLE *title;
